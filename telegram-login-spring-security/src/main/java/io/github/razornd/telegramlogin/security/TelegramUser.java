@@ -14,9 +14,28 @@
  *    limitations under the License.
  */
 
-dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-webmvc")
-    implementation(project(":spring-boot-starter-telegram-login"))
+package io.github.razornd.telegramlogin.security;
 
-    testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
+import org.jspecify.annotations.Nullable;
+import org.springframework.security.core.AuthenticatedPrincipal;
+
+import java.time.Instant;
+
+public record TelegramUser(
+        long id,
+        Instant authDate,
+        String hash,
+        @Nullable
+        String firstName,
+        @Nullable
+        String lastName,
+        @Nullable
+        String username,
+        @Nullable
+        String photoUrl
+) implements AuthenticatedPrincipal {
+    @Override
+    public String getName() {
+        return Long.toString(id);
+    }
 }

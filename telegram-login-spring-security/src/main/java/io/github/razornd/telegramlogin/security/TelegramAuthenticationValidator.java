@@ -14,9 +14,13 @@
  *    limitations under the License.
  */
 
-dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-webmvc")
-    implementation(project(":spring-boot-starter-telegram-login"))
+package io.github.razornd.telegramlogin.security;
 
-    testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
+public interface TelegramAuthenticationValidator {
+
+
+
+
+
+    ValidationResult validate(TelegramAuthenticationToken token);
 }

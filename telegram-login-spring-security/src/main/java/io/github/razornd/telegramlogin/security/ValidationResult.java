@@ -14,9 +14,22 @@
  *    limitations under the License.
  */
 
-dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-webmvc")
-    implementation(project(":spring-boot-starter-telegram-login"))
+package io.github.razornd.telegramlogin.security;
 
-    testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
+sealed public interface ValidationResult permits ValidationResult.Invalid, ValidationResult.Valid {
+
+    enum Valid implements ValidationResult {
+        INSTANCE
+    }
+
+    record Invalid(String reason) implements ValidationResult { }
+
+    static ValidationResult valid() {
+        return Valid.INSTANCE;
+    }
+
+    static ValidationResult invalid(String reason) {
+        return new Invalid(reason);
+    }
+
 }
