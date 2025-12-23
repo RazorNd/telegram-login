@@ -1,0 +1,59 @@
+/*
+ * Copyright 2025 Daniil Razorenov
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
+package io.github.razornd.telegramlogin.security;
+
+import jakarta.servlet.http.HttpServletRequest;
+import org.jspecify.annotations.Nullable;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.web.authentication.AuthenticationConverter;
+
+import java.time.Instant;
+import java.util.function.Function;
+
+public class TelegramAuthenticationConverter implements AuthenticationConverter {
+
+    @Override
+    @Nullable
+    public TelegramAuthenticationToken convert(HttpServletRequest request) {
+        var telegramUser = new TelegramUser(getRequiredParameter(request, "id", Long::parseLong),
+                                            getRequiredParameter(request,
+                                                                 "auth_date",
+                                                                 s -> Instant.ofEpochSecond(Long.parseLong(s))),
+                                            getRequiredParameter(request, "hash", Function.identity()),
+                                            request.getParameter("first_name"),
+                                            request.getParameter("last_name"),
+                                            request.getParameter("username"),
+                                            request.getParameter("photo_url"));
+
+        return new TelegramAuthenticationToken(telegramUser);
+    }
+
+    private static <T> T getRequiredParameter(HttpServletRequest request,
+                                              String parameterName,
+                                              Function<String, T> converter) {
+        var parameter = request.getParameter(parameterName);
+        if (parameter == null) {
+            throw new BadCredentialsException("Missing field '%s'".formatted(parameterName));
+        }
+        try {
+            return converter.apply(parameter);
+        } catch (Exception e) {
+            throw new BadCredentialsException("Could not parse field '%s'".formatted(parameterName), e);
+        }
+    }
+
+}
