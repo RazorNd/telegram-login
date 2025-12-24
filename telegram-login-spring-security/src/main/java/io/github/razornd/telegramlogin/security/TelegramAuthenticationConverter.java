@@ -18,13 +18,17 @@ package io.github.razornd.telegramlogin.security;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.jspecify.annotations.Nullable;
+import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.web.authentication.AuthenticationConverter;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 
 import java.time.Instant;
 import java.util.function.Function;
 
 public class TelegramAuthenticationConverter implements AuthenticationConverter {
+
+    private AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource = new WebAuthenticationDetailsSource();
 
     @Override
     @Nullable
@@ -39,7 +43,13 @@ public class TelegramAuthenticationConverter implements AuthenticationConverter 
                                             request.getParameter("username"),
                                             request.getParameter("photo_url"));
 
-        return new TelegramAuthenticationToken(telegramUser);
+        var authDetails = authenticationDetailsSource.buildDetails(request);
+
+        return new TelegramAuthenticationToken(telegramUser, authDetails);
+    }
+
+    public void setAuthenticationDetailsSource(AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource) {
+        this.authenticationDetailsSource = authenticationDetailsSource;
     }
 
     private static <T> T getRequiredParameter(HttpServletRequest request,

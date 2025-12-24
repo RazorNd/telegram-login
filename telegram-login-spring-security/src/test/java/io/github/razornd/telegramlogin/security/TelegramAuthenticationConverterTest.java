@@ -16,11 +16,15 @@
 
 package io.github.razornd.telegramlogin.security;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.mock.web.MockServletContext;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.util.MultiValueMap;
 
@@ -30,6 +34,8 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 class TelegramAuthenticationConverterTest {
 
@@ -52,13 +58,38 @@ class TelegramAuthenticationConverterTest {
                                                         .queryParam("auth_date", "1677721600")
                                                         .queryParam("hash", "some-hash")
                                                         .buildRequest(new MockServletContext());
+        var details = new WebAuthenticationDetails(telegramAuthRequest);
 
 
         var actual = converter.convert(telegramAuthRequest);
 
         assertThat(actual)
                 .usingRecursiveComparison()
-                .isEqualTo(new TelegramAuthenticationToken(expectedUser));
+                .isEqualTo(new TelegramAuthenticationToken(expectedUser, details));
+    }
+
+    @Test
+    void convertShouldUseCustomAuthDetailsSource() {
+        var telegramAuthRequest = MockMvcRequestBuilders.get("/auth/telegram")
+                                                        .queryParam("id", "1234567890")
+                                                        .queryParam("first_name", "Daniil")
+                                                        .queryParam("last_name", "Razorenov")
+                                                        .queryParam("username", "razornd")
+                                                        .queryParam("auth_date", "1677721600")
+                                                        .queryParam("hash", "some-hash")
+                                                        .buildRequest(new MockServletContext());
+
+        Object customDetails = new Object();
+        AuthenticationDetailsSource<HttpServletRequest, ?> customDetailsSource = mock();
+
+        doReturn(customDetails).when(customDetailsSource).buildDetails(any());
+
+        converter.setAuthenticationDetailsSource(customDetailsSource);
+
+        var actual = converter.convert(telegramAuthRequest);
+
+        assertThat(actual).extracting(AbstractAuthenticationToken::getDetails).isSameAs(customDetails);
+        verify(customDetailsSource).buildDetails(telegramAuthRequest);
     }
 
     @ParameterizedTest

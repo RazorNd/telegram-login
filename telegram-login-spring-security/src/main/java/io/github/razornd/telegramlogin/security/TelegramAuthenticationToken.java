@@ -27,9 +27,14 @@ public class TelegramAuthenticationToken extends AbstractAuthenticationToken {
     private final TelegramUser principal;
 
     public TelegramAuthenticationToken(TelegramUser principal) {
+        this(principal, null);
+    }
+
+    public TelegramAuthenticationToken(TelegramUser principal, @Nullable Object details) {
         super((Collection<? extends GrantedAuthority>) null);
         this.principal = principal;
         setAuthenticated(false);
+        setDetails(details);
     }
 
     @Override
