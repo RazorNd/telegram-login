@@ -19,7 +19,9 @@ plugins {
 }
 
 dependencies {
-    api("org.springframework.boot:spring-boot-starter-security")
-    api(project(":telegram-login-spring-security"))
-    api(project(":telegram-login-spring-boot-autoconfigure"))
+    implementation(project(":telegram-login-spring-security"))
+    implementation("org.springframework.boot:spring-boot-autoconfigure")
+    implementation("org.springframework.boot:spring-boot-security")
+
+    testImplementation("org.springframework.boot:spring-boot-test")
 }

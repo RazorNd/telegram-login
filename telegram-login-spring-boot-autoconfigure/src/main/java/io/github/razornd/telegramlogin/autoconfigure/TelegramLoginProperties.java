@@ -14,12 +14,10 @@
  *    limitations under the License.
  */
 
-plugins {
-    `java-library`
-}
+package io.github.razornd.telegramlogin.autoconfigure;
 
-dependencies {
-    api("org.springframework.boot:spring-boot-starter-security")
-    api(project(":telegram-login-spring-security"))
-    api(project(":telegram-login-spring-boot-autoconfigure"))
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
+@ConfigurationProperties(prefix = "telegram.login")
+public record TelegramLoginProperties(String botToken) {
 }

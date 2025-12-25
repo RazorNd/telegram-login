@@ -10,6 +10,7 @@
             <option value="$PROJECT_DIR$/samples" />
             <option value="$PROJECT_DIR$/samples/mvc-sample" />
             <option value="$PROJECT_DIR$/spring-boot-starter-telegram-login" />
+            <option value="$PROJECT_DIR$/telegram-login-spring-boot-autoconfigure" />
             <option value="$PROJECT_DIR$/telegram-login-spring-security" />
           </set>
         </option>

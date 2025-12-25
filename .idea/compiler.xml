@@ -14,6 +14,9 @@
       <module name="telegram-login.spring-boot-starter-telegram-login" options="-parameters" />
       <module name="telegram-login.spring-boot-starter-telegram-login.main" options="-parameters" />
       <module name="telegram-login.spring-boot-starter-telegram-login.test" options="-parameters" />
+      <module name="telegram-login.telegram-login-spring-boot-autoconfigure" options="-parameters" />
+      <module name="telegram-login.telegram-login-spring-boot-autoconfigure.main" options="-parameters" />
+      <module name="telegram-login.telegram-login-spring-boot-autoconfigure.test" options="-parameters" />
       <module name="telegram-login.telegram-login-spring-security" options="-parameters" />
       <module name="telegram-login.telegram-login-spring-security.main" options="-parameters" />
       <module name="telegram-login.telegram-login-spring-security.test" options="-parameters" />
