@@ -39,8 +39,12 @@ public class HashValidator implements TelegramAuthenticationValidator {
 
     private final byte[] secretKey;
 
+    public HashValidator(byte[] secretKey) {
+        this.secretKey = secretKey;
+    }
+
     public HashValidator(String botToken) {
-        secretKey = sha256(botToken);
+        this(sha256(botToken));
     }
 
     @Override
@@ -97,7 +101,7 @@ public class HashValidator implements TelegramAuthenticationValidator {
         }
     }
 
-    private byte[] sha256(String botToken) {
+    private static byte[] sha256(String botToken) {
         try {
             return MessageDigest.getInstance(HASH_ALGORITHM).digest(botToken.getBytes(StandardCharsets.UTF_8));
         } catch (NoSuchAlgorithmException exception) {
