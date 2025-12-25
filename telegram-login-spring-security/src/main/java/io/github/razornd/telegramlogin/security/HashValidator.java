@@ -26,12 +26,16 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Comparator;
 import java.util.HexFormat;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class HashValidator implements TelegramAuthenticationValidator {
 
     private static final String HMAC_ALGORITHM = "HmacSHA256";
+    private static final String HASH_ALGORITHM = "SHA-256";
+
+    private static final HexFormat HEX_FORMAT = HexFormat.of();
 
     private final byte[] secretKey;
 
@@ -43,17 +47,29 @@ public class HashValidator implements TelegramAuthenticationValidator {
     public ValidationResult validate(TelegramAuthenticationToken token) {
         var telegramUser = token.getPrincipal();
 
+        return parseHash(telegramUser.hash())
+                .map(hash -> validateUserHash(telegramUser, hash))
+                .orElseGet(() -> ValidationResult.invalid("Invalid hash format"));
+    }
+
+    private ValidationResult validateUserHash(TelegramUser telegramUser, byte[] hash) {
         var dataCheckString = makeDataCheckString(telegramUser);
 
         var hmac = hmac(dataCheckString);
 
-        final byte[] provided = HexFormat.of().parseHex(telegramUser.hash());
-
-        if (MessageDigest.isEqual(hmac, provided)) {
+        if (MessageDigest.isEqual(hmac, hash)) {
             return ValidationResult.valid();
         }
 
         return ValidationResult.invalid("Invalid hash");
+    }
+
+    private Optional<byte[]> parseHash(String hash) {
+        try {
+            return Optional.of(HEX_FORMAT.parseHex(hash));
+        } catch (IllegalArgumentException e) {
+            return Optional.empty();
+        }
     }
 
     private String makeDataCheckString(TelegramUser telegramUser) {
@@ -83,7 +99,7 @@ public class HashValidator implements TelegramAuthenticationValidator {
 
     private byte[] sha256(String botToken) {
         try {
-            return MessageDigest.getInstance("SHA-256").digest(botToken.getBytes(StandardCharsets.UTF_8));
+            return MessageDigest.getInstance(HASH_ALGORITHM).digest(botToken.getBytes(StandardCharsets.UTF_8));
         } catch (NoSuchAlgorithmException exception) {
             throw new IllegalStateException(exception);
         }

@@ -70,4 +70,19 @@ class HashValidatorTest {
 
         assertThat(actual).isEqualTo(ValidationResult.invalid("Invalid hash"));
     }
+
+    @Test
+    void validateShouldReturnIncorrectResultOnNotHexHash() {
+        var telegramUser = new TelegramUser(24968L,
+                                            Instant.parse("2025-12-23T21:52:13Z"),
+                                            "not-a-hex-hash",
+                                            null,
+                                            null,
+                                            "kyndraryu",
+                                            null);
+
+        var actual = hashValidator.validate(new TelegramAuthenticationToken(telegramUser));
+
+        assertThat(actual).isEqualTo(ValidationResult.invalid("Invalid hash format"));
+    }
 }
