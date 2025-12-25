@@ -256,6 +256,20 @@ class TelegramLoginConfigurerTest {
                .andExpect(authenticated());
     }
 
+    @Test
+    void shouldUseHashValidatorAsBean() throws Exception {
+        var context = createContext(HashValidatorAsBeanConfig.class);
+        var mockMvc = createMockMvc(context);
+
+        var date = currentDate();
+
+        mockMvc.perform(get("/login/telegram")
+                                .param("id", "616686")
+                                .param("auth_date", date)
+                                .param("hash", calcHash(Map.of("id", "616686", "auth_date", date))))
+               .andExpect(authenticated().withUsername("616686"));
+    }
+
     @Configuration
     @EnableWebSecurity
     static class DefaultConfig {
@@ -454,6 +468,20 @@ class TelegramLoginConfigurerTest {
                     .requestMatcher(pathPattern(HttpMethod.OPTIONS, "/custom/path"))
             );
             return http.build();
+        }
+    }
+
+    @Configuration
+    @EnableWebSecurity
+    static class HashValidatorAsBeanConfig {
+        @Bean
+        public HashValidator hashValidator() {
+            return new HashValidator(BOT_TOKEN);
+        }
+
+        @Bean
+        public SecurityFilterChain securityFilterChain(HttpSecurity http) {
+            return http.with(new TelegramLoginConfigurer<>()).build();
         }
     }
 

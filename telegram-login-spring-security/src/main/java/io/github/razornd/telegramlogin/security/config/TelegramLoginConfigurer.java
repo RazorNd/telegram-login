@@ -19,6 +19,7 @@ package io.github.razornd.telegramlogin.security.config;
 import io.github.razornd.telegramlogin.security.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.jspecify.annotations.Nullable;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -178,8 +179,22 @@ public class TelegramLoginConfigurer<B extends HttpSecurityBuilder<B>>
     }
 
     private List<TelegramAuthenticationValidator> defaultAuthValidators() {
+        var hashValidator = this.hashValidator;
+        if (hashValidator == null) {
+            hashValidator = getBeanOrNull(HashValidator.class);
+        }
         Assert.notNull(hashValidator, "Bot token or HashValidator must be set");
         return List.of(hashValidator, new AuthDateExpirationValidator());
+    }
+
+    @Nullable
+    private <C> C getBeanOrNull(Class<C> clazz) {
+        ApplicationContext context = getBuilder().getSharedObject(ApplicationContext.class);
+        //noinspection ConstantValue
+        if (context == null) {
+            return null;
+        }
+        return context.getBeanProvider(clazz).getIfUnique();
     }
 
 }
