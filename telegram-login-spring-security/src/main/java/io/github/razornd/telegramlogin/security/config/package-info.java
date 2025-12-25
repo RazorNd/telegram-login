@@ -14,15 +14,8 @@
  *    limitations under the License.
  */
 
-plugins {
-    `java-library`
-}
 
-dependencies {
-    api("org.springframework.security:spring-security-web")
-    api("org.springframework.security:spring-security-config")
-    implementation("org.springframework:spring-webmvc")
-    implementation("org.apache.tomcat.embed:tomcat-embed-core")
+@NullMarked
+package io.github.razornd.telegramlogin.security.config;
 
-    testImplementation("org.springframework.security:spring-security-test")
-}
+import org.jspecify.annotations.NullMarked;
