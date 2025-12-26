@@ -16,18 +16,42 @@
 
 package io.github.razornd.telegramlogin.security;
 
+/**
+ * Represents the result of a Telegram authentication validation.
+ *
+ * <p>Can be either {@link Valid} or {@link Invalid}.
+ *
+ * @author Daniil Razorenov
+ * @see TelegramAuthenticationValidator
+ */
 sealed public interface ValidationResult permits ValidationResult.Invalid, ValidationResult.Valid {
 
+    /**
+     * Successful validation result.
+     */
     enum Valid implements ValidationResult {
         INSTANCE
     }
 
+    /**
+     * Failed validation result with a reason.
+     * @param reason the reason for failure
+     */
     record Invalid(String reason) implements ValidationResult { }
 
+    /**
+     * Factory method for creating a valid result.
+     * @return the valid result singleton
+     */
     static ValidationResult valid() {
         return Valid.INSTANCE;
     }
 
+    /**
+     * Factory method for creating an invalid result.
+     * @param reason the reason for failure
+     * @return a new invalid result
+     */
     static ValidationResult invalid(String reason) {
         return new Invalid(reason);
     }

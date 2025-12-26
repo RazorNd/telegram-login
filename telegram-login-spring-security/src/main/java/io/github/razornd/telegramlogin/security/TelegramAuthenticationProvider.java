@@ -25,16 +25,41 @@ import org.springframework.security.core.authority.FactorGrantedAuthority;
 
 import java.util.List;
 
+/**
+ * An {@link AuthenticationProvider} for Telegram authentication.
+ *
+ * <p>This provider validates a {@link TelegramAuthenticationToken} using a
+ * {@link TelegramAuthenticationValidator}. If validation passes, it returns a
+ * {@link TelegramAuthentication} with the {@code TELEGRAM} authority factor.
+ *
+ * @author Daniil Razorenov
+ * @see TelegramAuthenticationToken
+ * @see TelegramAuthentication
+ * @see TelegramAuthenticationValidator
+ */
 public class TelegramAuthenticationProvider implements AuthenticationProvider {
 
+    /**
+     * The factor granted to successfully authenticated Telegram users.
+     */
     public static final String AUTHENTICATION_FACTOR = "TELEGRAM";
 
     private final TelegramAuthenticationValidator validator;
 
+    /**
+     * Creates a new {@link TelegramAuthenticationProvider} with the given {@link TelegramAuthenticationValidator}.
+     * @param validator the validator to use
+     */
     public TelegramAuthenticationProvider(TelegramAuthenticationValidator validator) {
         this.validator = validator;
     }
 
+    /**
+     * Authenticates the given {@link Authentication} object.
+     * @param authentication the authentication request object
+     * @return a successfully authenticated {@link TelegramAuthentication}
+     * @throws AuthenticationException if authentication fails
+     */
     @Override
     @Nullable
     public TelegramAuthentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -49,6 +74,11 @@ public class TelegramAuthenticationProvider implements AuthenticationProvider {
                                           List.of(FactorGrantedAuthority.fromFactor(AUTHENTICATION_FACTOR)));
     }
 
+    /**
+     * Checks if this provider supports the given authentication type.
+     * @param authentication the authentication class to check
+     * @return {@code true} if the class is {@link TelegramAuthenticationToken} or a subclass
+     */
     @Override
     public boolean supports(Class<?> authentication) {
         return TelegramAuthenticationToken.class.isAssignableFrom(authentication);

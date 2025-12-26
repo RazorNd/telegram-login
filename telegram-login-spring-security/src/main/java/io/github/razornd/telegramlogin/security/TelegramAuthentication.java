@@ -22,22 +22,42 @@ import org.springframework.security.core.GrantedAuthority;
 
 import java.util.List;
 
+/**
+ * An implementation of {@link org.springframework.security.core.Authentication} for a
+ * successfully authenticated Telegram user.
+ *
+ * @author Daniil Razorenov
+ * @see TelegramUser
+ */
 public class TelegramAuthentication extends AbstractAuthenticationToken {
 
     private final TelegramUser principal;
 
+    /**
+     * Creates a new authenticated token for the specified {@link TelegramUser}.
+     * @param principal the authenticated Telegram user
+     * @param authorities the authorities granted to the user
+     */
     public TelegramAuthentication(TelegramUser principal, List<? extends GrantedAuthority> authorities) {
         super(authorities);
         this.principal = principal;
         setAuthenticated(true);
     }
 
+    /**
+     * Telegram authentication does not use credentials after the initial validation.
+     * @return {@code null}
+     */
     @Override
     @Nullable
     public Object getCredentials() {
         return null;
     }
 
+    /**
+     * Returns the authenticated {@link TelegramUser}.
+     * @return the principal
+     */
     @Override
     public TelegramUser getPrincipal() {
         return principal;

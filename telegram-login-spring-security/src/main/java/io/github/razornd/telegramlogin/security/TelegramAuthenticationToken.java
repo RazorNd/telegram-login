@@ -22,14 +22,33 @@ import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;
 
+/**
+ * An {@link org.springframework.security.core.Authentication} request for Telegram login.
+ *
+ * <p>This token is initially unauthenticated and contains the user information provided
+ * by the Telegram login widget. It is subsequently processed by a
+ * {@link TelegramAuthenticationProvider}.
+ *
+ * @author Daniil Razorenov
+ * @see TelegramAuthenticationProvider
+ */
 public class TelegramAuthenticationToken extends AbstractAuthenticationToken {
 
     private final TelegramUser principal;
 
+    /**
+     * Creates a new unauthenticated token for the given {@link TelegramUser}.
+     * @param principal the Telegram user to authenticate
+     */
     public TelegramAuthenticationToken(TelegramUser principal) {
         this(principal, null);
     }
 
+    /**
+     * Creates a new unauthenticated token for the given {@link TelegramUser} and details.
+     * @param principal the Telegram user to authenticate
+     * @param details the authentication details (e.g. remote address, session ID)
+     */
     public TelegramAuthenticationToken(TelegramUser principal, @Nullable Object details) {
         super((Collection<? extends GrantedAuthority>) null);
         this.principal = principal;
@@ -37,12 +56,20 @@ public class TelegramAuthenticationToken extends AbstractAuthenticationToken {
         setDetails(details);
     }
 
+    /**
+     * Telegram authentication does not use credentials.
+     * @return {@code null}
+     */
     @Override
     @Nullable
     public String getCredentials() {
         return null;
     }
 
+    /**
+     * Returns the {@link TelegramUser} to be authenticated.
+     * @return the principal
+     */
     @Override
     public TelegramUser getPrincipal() {
         return principal;

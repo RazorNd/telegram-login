@@ -16,11 +16,22 @@
 
 package io.github.razornd.telegramlogin.security;
 
+/**
+ * Strategy interface for validating Telegram authentication tokens.
+ *
+ * <p>Implementations are responsible for checking various aspects of the authentication
+ * data, such as hash integrity, data freshness, etc.
+ *
+ * @author Daniil Razorenov
+ * @see TelegramAuthenticationToken
+ * @see ValidationResult
+ */
 public interface TelegramAuthenticationValidator {
 
-
-
-
-
+    /**
+     * Validates the given {@link TelegramAuthenticationToken}.
+     * @param token the token to validate
+     * @return the result of the validation
+     */
     ValidationResult validate(TelegramAuthenticationToken token);
 }

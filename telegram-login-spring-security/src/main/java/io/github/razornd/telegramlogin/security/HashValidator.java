@@ -30,6 +30,15 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * A {@link TelegramAuthenticationValidator} that verifies the hash of the Telegram user data.
+ *
+ * <p>The hash is calculated using HMAC-SHA256 with the SHA256 of the bot token as the secret key.
+ * The data to be hashed is a concatenation of all received fields (except hash) sorted alphabetically.
+ *
+ * @author Daniil Razorenov
+ * @see <a href="https://core.telegram.org/widgets/login#checking-authorization">Checking Authorization</a>
+ */
 public class HashValidator implements TelegramAuthenticationValidator {
 
     private static final String HMAC_ALGORITHM = "HmacSHA256";
@@ -39,14 +48,27 @@ public class HashValidator implements TelegramAuthenticationValidator {
 
     private final byte[] secretKey;
 
+    /**
+     * Creates a new {@link HashValidator} with the pre-calculated secret key.
+     * @param secretKey the SHA256 hash of the bot token
+     */
     public HashValidator(byte[] secretKey) {
         this.secretKey = secretKey;
     }
 
+    /**
+     * Creates a new {@link HashValidator} with the given bot token.
+     * @param botToken the Telegram bot token
+     */
     public HashValidator(String botToken) {
         this(sha256(botToken));
     }
 
+    /**
+     * Validates the hash of the Telegram user in the given token.
+     * @param token the token to validate
+     * @return {@link ValidationResult#valid()} if the hash is correct, or {@link ValidationResult#invalid(String)} otherwise
+     */
     @Override
     public ValidationResult validate(TelegramAuthenticationToken token) {
         var telegramUser = token.getPrincipal();

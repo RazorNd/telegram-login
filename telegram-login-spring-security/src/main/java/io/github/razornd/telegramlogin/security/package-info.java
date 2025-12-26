@@ -15,6 +15,9 @@
  */
 
 
+/**
+ * Core classes for Telegram authentication.
+ */
 @NullMarked
 package io.github.razornd.telegramlogin.security;
 

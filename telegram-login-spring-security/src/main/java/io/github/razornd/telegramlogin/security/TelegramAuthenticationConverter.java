@@ -26,10 +26,27 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import java.time.Instant;
 import java.util.function.Function;
 
+/**
+ * An {@link AuthenticationConverter} that extracts Telegram authentication data from an
+ * {@link HttpServletRequest} and converts it into a {@link TelegramAuthenticationToken}.
+ *
+ * <p>This converter expects the request to contain parameters provided by the Telegram
+ * Login Widget, such as {@code id}, {@code auth_date}, and {@code hash}.
+ *
+ * @author Daniil Razorenov
+ * @see TelegramAuthenticationToken
+ * @see <a href="https://core.telegram.org/widgets/login">Telegram Login Widget</a>
+ */
 public class TelegramAuthenticationConverter implements AuthenticationConverter {
 
     private AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource = new WebAuthenticationDetailsSource();
 
+    /**
+     * Converts the given {@link HttpServletRequest} into a {@link TelegramAuthenticationToken}.
+     * @param request the request to convert
+     * @return the unauthenticated {@link TelegramAuthenticationToken}
+     * @throws BadCredentialsException if any required parameters are missing or cannot be parsed
+     */
     @Override
     @Nullable
     public TelegramAuthenticationToken convert(HttpServletRequest request) {
@@ -48,6 +65,10 @@ public class TelegramAuthenticationConverter implements AuthenticationConverter 
         return new TelegramAuthenticationToken(telegramUser, authDetails);
     }
 
+    /**
+     * Sets the {@link AuthenticationDetailsSource} to use for building authentication details.
+     * @param authenticationDetailsSource the authentication details source
+     */
     public void setAuthenticationDetailsSource(AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource) {
         this.authenticationDetailsSource = authenticationDetailsSource;
     }

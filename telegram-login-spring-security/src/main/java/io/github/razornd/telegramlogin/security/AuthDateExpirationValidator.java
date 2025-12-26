@@ -20,11 +20,25 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 
+/**
+ * A {@link TelegramAuthenticationValidator} that checks if the Telegram authentication date has expired.
+ *
+ * <p>By default, the expiration duration is set to 24 hours.
+ *
+ * @author Daniil Razorenov
+ * @see TelegramUser#authDate()
+ */
 public class AuthDateExpirationValidator implements TelegramAuthenticationValidator {
 
     private Duration expirationDuration = Duration.ofHours(24);
     private Clock clock = Clock.systemUTC();
 
+    /**
+     * Validates that the authentication date in the given token is not older than
+     * the configured {@link #expirationDuration}.
+     * @param token the token to validate
+     * @return {@link ValidationResult#valid()} if not expired, or {@link ValidationResult#invalid(String)} otherwise
+     */
     @Override
     public ValidationResult validate(TelegramAuthenticationToken token) {
         var authenticationDate = token.getPrincipal().authDate();
@@ -38,10 +52,18 @@ public class AuthDateExpirationValidator implements TelegramAuthenticationValida
         return ValidationResult.valid();
     }
 
+    /**
+     * Sets the duration after which the authentication date is considered expired.
+     * @param expirationDuration the expiration duration
+     */
     public void setExpirationDuration(Duration expirationDuration) {
         this.expirationDuration = expirationDuration;
     }
 
+    /**
+     * Sets the {@link Clock} to use for determining the current time.
+     * @param clock the clock to use
+     */
     public void setClock(Clock clock) {
         this.clock = clock;
     }

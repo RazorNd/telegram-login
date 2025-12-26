@@ -15,6 +15,9 @@
  */
 
 
+/**
+ * Configuration classes for Telegram Login.
+ */
 @NullMarked
 package io.github.razornd.telegramlogin.security.config;
 
