@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: mvc-sample
+
+telegram:
+  login:
+    bot-token: ${BOT_TOKEN}

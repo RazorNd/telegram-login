@@ -14,12 +14,18 @@
  *    limitations under the License.
  */
 
-dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-webmvc")
-    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
-    implementation(project(":spring-boot-starter-telegram-login"))
+package io.github.razornd.telegramlogin.sample.mvc;
 
-    testImplementation("org.springframework.boot:spring-boot-starter-thymeleaf-test")
-    testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
-    testImplementation("org.htmlunit:htmlunit")
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@Controller
+@RequestMapping("/login")
+class LoginController {
+
+    @GetMapping
+    String loginPage() {
+        return "login";
+    }
 }
