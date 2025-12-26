@@ -14,16 +14,10 @@
  *    limitations under the License.
  */
 
+/**
+ * Auto-configuration classes for Telegram Login.
+ */
+@NullMarked
 package io.github.razornd.telegramlogin.autoconfigure;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
-/**
- * {@link ConfigurationProperties @ConfigurationProperties} for Telegram Login.
- *
- * @param botToken the Telegram bot token used for hash validation
- * @author Daniil Razorenov
- */
-@ConfigurationProperties(prefix = "telegram.login")
-public record TelegramLoginProperties(String botToken) {
-}
+import org.jspecify.annotations.NullMarked;

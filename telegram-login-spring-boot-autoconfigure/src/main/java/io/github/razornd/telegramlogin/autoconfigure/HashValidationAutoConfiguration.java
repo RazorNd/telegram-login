@@ -23,10 +23,22 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
+/**
+ * {@link AutoConfiguration @AutoConfiguration} for {@link HashValidator}.
+ *
+ * @author Daniil Razorenov
+ * @see HashValidator
+ */
 @AutoConfiguration
 @EnableConfigurationProperties(TelegramLoginProperties.class)
 public class HashValidationAutoConfiguration {
 
+    /**
+     * Creates a {@link HashValidator} bean if one is not already present and
+     * {@code telegram.login.bot-token} property is set.
+     * @param properties the telegram login properties
+     * @return a {@link HashValidator} initialized with the bot token
+     */
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnProperty(prefix = "telegram.login", value = "bot-token")

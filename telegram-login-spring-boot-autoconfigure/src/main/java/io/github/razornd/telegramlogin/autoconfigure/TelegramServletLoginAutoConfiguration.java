@@ -30,6 +30,14 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
+/**
+ * {@link AutoConfiguration @AutoConfiguration} for Telegram Login in a Servlet-based web application.
+ *
+ * <p>Configures a {@link SecurityFilterChain} if the default web security is missing.
+ *
+ * @author Daniil Razorenov
+ * @see TelegramLoginConfigurer
+ */
 @AutoConfiguration(before = ServletWebSecurityAutoConfiguration.class,
                    after = HashValidationAutoConfiguration.class,
                    afterName = "org.springframework.boot.webmvc.autoconfigure.WebMvcAutoConfiguration")
@@ -41,6 +49,11 @@ public class TelegramServletLoginAutoConfiguration {
     @ConditionalOnDefaultWebSecurity
     static class SecurityFilterChainConfiguration {
 
+        /**
+         * Creates a default {@link SecurityFilterChain} configured with {@link TelegramLoginConfigurer}.
+         * @param http the {@link HttpSecurity} to configure
+         * @return the configured {@link SecurityFilterChain}
+         */
         @Bean
         SecurityFilterChain telegramSecurityFilterChain(HttpSecurity http) {
             http.authorizeHttpRequests(requests -> {
