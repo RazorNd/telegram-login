@@ -18,10 +18,21 @@ plugins {
     `java-library`
 }
 
+description = "Telegram Login Spring Boot Autoconfigure"
+
 dependencies {
     implementation(project(":telegram-login-spring-security"))
     implementation("org.springframework.boot:spring-boot-autoconfigure")
     implementation("org.springframework.boot:spring-boot-security")
 
     testImplementation("org.springframework.boot:spring-boot-test")
+}
+
+publishing.publications.named<MavenPublication>("maven") {
+    pom {
+        name = "Telegram Login Spring Boot Autoconfigure"
+        description = "Spring Boot autoconfiguration module that provides automatic setup of Telegram Login Widget " +
+                "integration with Spring Security, including default validators, converters, and authentication " +
+                "providers."
+    }
 }

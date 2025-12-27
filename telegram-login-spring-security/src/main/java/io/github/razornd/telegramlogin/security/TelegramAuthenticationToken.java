@@ -34,10 +34,19 @@ import java.util.Collection;
  */
 public class TelegramAuthenticationToken extends AbstractAuthenticationToken {
 
+    /**
+     * The {@link TelegramUser} instance representing the authenticated user's details
+     * as provided by the Telegram Login Widget.
+     * <p>
+     * This field is immutable and contains user-specific information such as the ID,
+     * authentication date, and optional metadata like first name, last name, username,
+     * and profile photo URL. It is used as the principal in the authentication process.
+     */
     private final TelegramUser principal;
 
     /**
      * Creates a new unauthenticated token for the given {@link TelegramUser}.
+     *
      * @param principal the Telegram user to authenticate
      */
     public TelegramAuthenticationToken(TelegramUser principal) {
@@ -46,8 +55,9 @@ public class TelegramAuthenticationToken extends AbstractAuthenticationToken {
 
     /**
      * Creates a new unauthenticated token for the given {@link TelegramUser} and details.
+     *
      * @param principal the Telegram user to authenticate
-     * @param details the authentication details (e.g. remote address, session ID)
+     * @param details   the authentication details (e.g. remote address, session ID)
      */
     public TelegramAuthenticationToken(TelegramUser principal, @Nullable Object details) {
         super((Collection<? extends GrantedAuthority>) null);
@@ -58,6 +68,7 @@ public class TelegramAuthenticationToken extends AbstractAuthenticationToken {
 
     /**
      * Telegram authentication does not use credentials.
+     *
      * @return {@code null}
      */
     @Override
@@ -68,6 +79,7 @@ public class TelegramAuthenticationToken extends AbstractAuthenticationToken {
 
     /**
      * Returns the {@link TelegramUser} to be authenticated.
+     *
      * @return the principal
      */
     @Override

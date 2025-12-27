@@ -23,3 +23,11 @@ dependencies {
     api(project(":telegram-login-spring-security"))
     api(project(":telegram-login-spring-boot-autoconfigure"))
 }
+
+publishing.publications.named<MavenPublication>("maven") {
+    pom {
+        name = "Telegram Login Spring Boot Starter"
+        description = "Spring Boot Starter for integrating Telegram Login Widget with Spring Security, providing " +
+                "auto-configuration and seamless authentication setup"
+    }
+}

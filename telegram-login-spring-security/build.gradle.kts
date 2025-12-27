@@ -26,3 +26,12 @@ dependencies {
 
     testImplementation("org.springframework.security:spring-security-test")
 }
+
+publishing.publications.named<MavenPublication>("maven") {
+    pom {
+        name = "Telegram Login Spring Security"
+        description = "Spring Security integration module for Telegram Login Widget authentication. Provides " +
+                "authentication filters, providers, and validators for seamless integration of Telegram " +
+                "authentication into Spring Security filter chain."
+    }
+}

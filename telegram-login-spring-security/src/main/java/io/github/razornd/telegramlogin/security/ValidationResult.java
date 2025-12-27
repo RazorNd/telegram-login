@@ -30,6 +30,10 @@ sealed public interface ValidationResult permits ValidationResult.Invalid, Valid
      * Successful validation result.
      */
     enum Valid implements ValidationResult {
+        /**
+         * Singleton instance representing a successful validation result.
+         * This instance is used to indicate that validation has passed without errors.
+         */
         INSTANCE
     }
 

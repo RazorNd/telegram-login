@@ -15,8 +15,7 @@
  */
 
 plugins {
-    id("org.springframework.boot") version "4.0.1" apply false
-    id("io.spring.dependency-management") version "1.1.7" apply false
+    id("org.springframework.boot") apply false
 }
 
 allprojects {
@@ -36,14 +35,70 @@ allprojects {
 
 subprojects {
     apply(plugin = "java")
-    apply(plugin = "io.spring.dependency-management")
-    apply(plugin = "org.springframework.boot")
+
+    plugins.withType<JavaLibraryPlugin> {
+        apply(plugin = "maven-publish")
+        apply(plugin = "signing")
+
+        configure<JavaPluginExtension> {
+            withSourcesJar()
+            withJavadocJar()
+        }
+
+        configure<PublishingExtension> {
+            publications {
+                create<MavenPublication>("maven") {
+                    from(components["java"])
+                    pom {
+                        name = this@subprojects.name
+                        description = this@subprojects.description
+                        url = "https://github.com/RazorNd/telegram-login"
+
+                        licenses {
+                            license {
+                                name = "The Apache License, Version 2.0"
+                                url = "https://www.apache.org/licenses/LICENSE-2.0.txt"
+                            }
+                        }
+                        developers {
+                            developer {
+                                id = "razornd"
+                                name = "Daniil Razorenov"
+                                email = "razor@razornd.ru"
+                            }
+                        }
+                        scm {
+                            connection = "scm:git:https://github.com/RazorNd/telegram-login.git"
+                            developerConnection = "scm:git:ssh://git@github.com/RazorNd/telegram-login.git"
+                            url = "https://github.com/RazorNd/telegram-login"
+                        }
+                    }
+                }
+            }
+            repositories {
+                maven {
+                    name = "Directory"
+                    url = uri(layout.buildDirectory.dir("repo/maven"))
+                }
+            }
+        }
+
+        configure<SigningExtension> {
+            sign(the<PublishingExtension>().publications["maven"])
+        }
+
+        tasks.withType<Javadoc> {
+            (options as StandardJavadocDocletOptions).addBooleanOption("html5", true)
+        }
+    }
 
     tasks.withType<Test> {
         useJUnitPlatform()
     }
 
     dependencies {
+        val springBootVersion: String by project
+        "implementation"(platform("org.springframework.boot:spring-boot-dependencies:$springBootVersion"))
         "testImplementation"("org.springframework.boot:spring-boot-starter-test")
         "testRuntimeOnly"("org.junit.platform:junit-platform-launcher")
     }

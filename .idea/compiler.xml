@@ -5,21 +5,9 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="telegram-login.samples" options="-parameters" />
-      <module name="telegram-login.samples.main" options="-parameters" />
       <module name="telegram-login.samples.mvc-sample" options="-parameters" />
       <module name="telegram-login.samples.mvc-sample.main" options="-parameters" />
       <module name="telegram-login.samples.mvc-sample.test" options="-parameters" />
-      <module name="telegram-login.samples.test" options="-parameters" />
-      <module name="telegram-login.spring-boot-starter-telegram-login" options="-parameters" />
-      <module name="telegram-login.spring-boot-starter-telegram-login.main" options="-parameters" />
-      <module name="telegram-login.spring-boot-starter-telegram-login.test" options="-parameters" />
-      <module name="telegram-login.telegram-login-spring-boot-autoconfigure" options="-parameters" />
-      <module name="telegram-login.telegram-login-spring-boot-autoconfigure.main" options="-parameters" />
-      <module name="telegram-login.telegram-login-spring-boot-autoconfigure.test" options="-parameters" />
-      <module name="telegram-login.telegram-login-spring-security" options="-parameters" />
-      <module name="telegram-login.telegram-login-spring-security.main" options="-parameters" />
-      <module name="telegram-login.telegram-login-spring-security.test" options="-parameters" />
     </option>
   </component>
 </project>

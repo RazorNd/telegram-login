@@ -31,6 +31,12 @@ import java.util.List;
  */
 public class TelegramAuthentication extends AbstractAuthenticationToken {
 
+    /**
+     * The authenticated Telegram user associated with this authentication token.
+     * Represents the principal of the current authentication context.
+     *
+     * @see TelegramUser
+     */
     private final TelegramUser principal;
 
     /**

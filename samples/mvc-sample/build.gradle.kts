@@ -14,6 +14,10 @@
  *    limitations under the License.
  */
 
+plugins {
+    id("org.springframework.boot")
+}
+
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
