@@ -30,9 +30,9 @@ import static org.mockito.Mockito.*;
 
 class TelegramAuthenticationProviderTest {
 
+    private static final String TEST_USER_HASH = "F192pHQTGO0Rc2hv8ko1";
     private static final TelegramUser TEST_USER = new TelegramUser(5114845L,
                                                                    Instant.parse("2023-05-29T15:54:48Z"),
-                                                                   "F192pHQTGO0Rc2hv8ko1",
                                                                    null,
                                                                    null,
                                                                    null,
@@ -43,7 +43,7 @@ class TelegramAuthenticationProviderTest {
 
     @Test
     void authenticate() {
-        var testAuthToken = new TestAuthenticationToken(TEST_USER);
+        var testAuthToken = new TestAuthenticationToken(TEST_USER, TEST_USER_HASH);
         var factorAuthority = FactorGrantedAuthority.fromFactor(TelegramAuthenticationProvider.AUTHENTICATION_FACTOR);
 
         doReturn(ValidationResult.valid()).when(validator).validate(any());
@@ -58,7 +58,7 @@ class TelegramAuthenticationProviderTest {
 
     @Test
     void authenticateShouldValidateAuthentication() {
-        var testAuthToken = new TestAuthenticationToken(TEST_USER);
+        var testAuthToken = new TestAuthenticationToken(TEST_USER, TEST_USER_HASH);
 
         doReturn(ValidationResult.valid()).when(validator).validate(any());
 
@@ -71,7 +71,7 @@ class TelegramAuthenticationProviderTest {
     void authenticateShouldThrowBadRequestOnFailedValidation() {
         doReturn(ValidationResult.invalid("test reason")).when(validator).validate(any());
 
-        var testAuthToken = new TestAuthenticationToken(TEST_USER);
+        var testAuthToken = new TestAuthenticationToken(TEST_USER, TEST_USER_HASH);
 
         assertThatThrownBy(() -> provider.authenticate(testAuthToken))
                 .isInstanceOf(BadCredentialsException.class)
@@ -86,8 +86,8 @@ class TelegramAuthenticationProviderTest {
     }
 
     static class TestAuthenticationToken extends TelegramAuthenticationToken {
-        TestAuthenticationToken(TelegramUser principal) {
-            super(principal);
+        TestAuthenticationToken(TelegramUser principal, String hash) {
+            super(principal, hash);
         }
     }
 }

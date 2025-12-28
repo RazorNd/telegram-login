@@ -45,7 +45,6 @@ class TelegramAuthenticationConverterTest {
     void convert() {
         var expectedUser = new TelegramUser(1234567890L,
                                             Instant.ofEpochSecond(1677721600L),
-                                            "some-hash",
                                             "Daniil",
                                             "Razorenov",
                                             "razornd",
@@ -65,7 +64,7 @@ class TelegramAuthenticationConverterTest {
 
         assertThat(actual)
                 .usingRecursiveComparison()
-                .isEqualTo(new TelegramAuthenticationToken(expectedUser, details));
+                .isEqualTo(new TelegramAuthenticationToken(expectedUser, "some-hash", details));
     }
 
     @Test

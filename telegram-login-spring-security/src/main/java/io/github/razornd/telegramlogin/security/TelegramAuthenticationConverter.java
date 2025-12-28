@@ -50,11 +50,11 @@ public class TelegramAuthenticationConverter implements AuthenticationConverter 
     @Override
     @Nullable
     public TelegramAuthenticationToken convert(HttpServletRequest request) {
+        var hash = getRequiredParameter(request, "hash", Function.identity());
         var telegramUser = new TelegramUser(getRequiredParameter(request, "id", Long::parseLong),
                                             getRequiredParameter(request,
                                                                  "auth_date",
                                                                  s -> Instant.ofEpochSecond(Long.parseLong(s))),
-                                            getRequiredParameter(request, "hash", Function.identity()),
                                             request.getParameter("first_name"),
                                             request.getParameter("last_name"),
                                             request.getParameter("username"),
@@ -62,7 +62,7 @@ public class TelegramAuthenticationConverter implements AuthenticationConverter 
 
         var authDetails = authenticationDetailsSource.buildDetails(request);
 
-        return new TelegramAuthenticationToken(telegramUser, authDetails);
+        return new TelegramAuthenticationToken(telegramUser, hash, authDetails);
     }
 
     /**

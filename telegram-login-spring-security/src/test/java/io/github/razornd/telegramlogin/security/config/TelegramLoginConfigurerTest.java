@@ -162,9 +162,9 @@ class TelegramLoginConfigurerTest {
         var mockMvc = createMockMvc(context);
         var authTokenCaptor = ArgumentCaptor.forClass(TelegramAuthenticationToken.class);
         var date = currentDate();
+        var expectedHash = "any";
         var expectedUser = new TelegramUser(42L,
                                             Instant.ofEpochSecond(Long.parseLong(date)),
-                                            "any",
                                             null,
                                             null,
                                             null,
@@ -173,7 +173,7 @@ class TelegramLoginConfigurerTest {
         mockMvc.perform(get("/login/telegram")
                                 .param("id", "42")
                                 .param("auth_date", date)
-                                .param("hash", "any"))
+                                .param("hash", expectedHash))
                .andExpect(authenticated());
 
         verify(context.getBean(AuthenticationManager.class)).authenticate(authTokenCaptor.capture());
@@ -181,7 +181,7 @@ class TelegramLoginConfigurerTest {
         assertThat(authTokenCaptor.getValue())
                 .usingRecursiveComparison()
                 .ignoringFields("details")
-                .isEqualTo(new TelegramAuthenticationToken(expectedUser));
+                .isEqualTo(new TelegramAuthenticationToken(expectedUser, expectedHash));
     }
 
     @Test

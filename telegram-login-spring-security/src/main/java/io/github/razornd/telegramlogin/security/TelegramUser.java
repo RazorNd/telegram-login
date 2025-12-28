@@ -26,7 +26,6 @@ import java.time.Instant;
  *
  * @param id        the unique identifier for this user
  * @param authDate  the date when the authentication was performed
- * @param hash      the hash value used to verify the authenticity of the data
  * @param firstName the user's first name
  * @param lastName  the user's last name (optional)
  * @param username  the user's username (optional)
@@ -37,7 +36,6 @@ import java.time.Instant;
 public record TelegramUser(
         long id,
         Instant authDate,
-        String hash,
         @Nullable
         String firstName,
         @Nullable

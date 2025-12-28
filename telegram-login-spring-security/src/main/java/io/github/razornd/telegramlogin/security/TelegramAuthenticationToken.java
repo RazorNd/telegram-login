@@ -44,37 +44,43 @@ public class TelegramAuthenticationToken extends AbstractAuthenticationToken {
      */
     private final TelegramUser principal;
 
+    @Nullable
+    private String hash;
+
     /**
-     * Creates a new unauthenticated token for the given {@link TelegramUser}.
+     * Constructs a new unauthenticated Telegram authentication token for the given user information.
      *
-     * @param principal the Telegram user to authenticate
+     * @param principal the Telegram user being authenticated
+     * @param hash      the hash value used to verify the authenticity of the authentication data
      */
-    public TelegramAuthenticationToken(TelegramUser principal) {
-        this(principal, null);
+    public TelegramAuthenticationToken(TelegramUser principal, String hash) {
+        this(principal, hash, null);
     }
 
     /**
      * Creates a new unauthenticated token for the given {@link TelegramUser} and details.
      *
      * @param principal the Telegram user to authenticate
+     * @param hash      the hash value used to verify the authenticity of the authentication data
      * @param details   the authentication details (e.g. remote address, session ID)
      */
-    public TelegramAuthenticationToken(TelegramUser principal, @Nullable Object details) {
+    public TelegramAuthenticationToken(TelegramUser principal, String hash, @Nullable Object details) {
         super((Collection<? extends GrantedAuthority>) null);
         this.principal = principal;
+        this.hash = hash;
         setAuthenticated(false);
         setDetails(details);
     }
 
     /**
-     * Telegram authentication does not use credentials.
+     * Retrieves the hash value used to verify the authenticity of the authentication data.
      *
-     * @return {@code null}
+     * @return the hash value if available, or {@code null} if not set
      */
     @Override
     @Nullable
     public String getCredentials() {
-        return null;
+        return hash;
     }
 
     /**
@@ -85,5 +91,17 @@ public class TelegramAuthenticationToken extends AbstractAuthenticationToken {
     @Override
     public TelegramUser getPrincipal() {
         return principal;
+    }
+
+    /**
+     * Erases sensitive authentication credentials from the token by setting the hash value to {@code null}.
+     * <p>
+     * This method is typically invoked after the authentication process has completed to minimize the risk
+     * of exposing sensitive authentication data such as verification hashes. Subsequent calls to
+     * {@link #getCredentials()} will return {@code null}.
+     */
+    @Override
+    public void eraseCredentials() {
+        this.hash = null;
     }
 }

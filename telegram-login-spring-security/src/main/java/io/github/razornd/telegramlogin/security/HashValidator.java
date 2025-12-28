@@ -17,6 +17,7 @@
 package io.github.razornd.telegramlogin.security;
 
 import org.jspecify.annotations.Nullable;
+import org.springframework.util.Assert;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -72,8 +73,8 @@ public class HashValidator implements TelegramAuthenticationValidator {
     @Override
     public ValidationResult validate(TelegramAuthenticationToken token) {
         var telegramUser = token.getPrincipal();
-
-        return parseHash(telegramUser.hash())
+        Assert.notNull(token.getCredentials(), "Hash must not be null");
+        return parseHash(token.getCredentials())
                 .map(hash -> validateUserHash(telegramUser, hash))
                 .orElseGet(() -> ValidationResult.invalid("Invalid hash format"));
     }
