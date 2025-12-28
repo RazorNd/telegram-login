@@ -35,6 +35,6 @@ class UsernameControllerAdvice {
         if (principal.username() != null) {
             return principal.username();
         }
-        return principal.getName();
+        return String.valueOf(principal.getTelegramId());
     }
 }

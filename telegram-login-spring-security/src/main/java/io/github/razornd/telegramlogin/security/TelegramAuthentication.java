@@ -27,27 +27,33 @@ import java.util.List;
  * successfully authenticated Telegram user.
  *
  * @author Daniil Razorenov
+ * @see TelegramPrincipal
  * @see TelegramUser
  */
 public class TelegramAuthentication extends AbstractAuthenticationToken {
 
     /**
-     * The authenticated Telegram user associated with this authentication token.
+     * The authenticated Telegram principal associated with this authentication token.
      * Represents the principal of the current authentication context.
      *
-     * @see TelegramUser
+     * @see TelegramPrincipal
      */
-    private final TelegramUser principal;
+    private final TelegramPrincipal principal;
 
     /**
-     * Creates a new authenticated token for the specified {@link TelegramUser}.
-     * @param principal the authenticated Telegram user
+     * Creates a new authenticated token for the specified {@link TelegramPrincipal}.
+     * @param principal the authenticated Telegram principal
      * @param authorities the authorities granted to the user
      */
-    public TelegramAuthentication(TelegramUser principal, List<? extends GrantedAuthority> authorities) {
+    public TelegramAuthentication(TelegramPrincipal principal, List<? extends GrantedAuthority> authorities) {
         super(authorities);
         this.principal = principal;
         setAuthenticated(true);
+    }
+
+    @Override
+    public String getName() {
+        return String.valueOf(principal.getTelegramId());
     }
 
     /**
@@ -61,11 +67,11 @@ public class TelegramAuthentication extends AbstractAuthenticationToken {
     }
 
     /**
-     * Returns the authenticated {@link TelegramUser}.
+     * Returns the authenticated {@link TelegramPrincipal}.
      * @return the principal
      */
     @Override
-    public TelegramUser getPrincipal() {
+    public TelegramPrincipal getPrincipal() {
         return principal;
     }
 }

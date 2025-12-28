@@ -17,7 +17,6 @@
 package io.github.razornd.telegramlogin.security;
 
 import org.jspecify.annotations.Nullable;
-import org.springframework.security.core.AuthenticatedPrincipal;
 
 import java.time.Instant;
 
@@ -44,13 +43,10 @@ public record TelegramUser(
         String username,
         @Nullable
         String photoUrl
-) implements AuthenticatedPrincipal {
-    /**
-     * Returns the user's ID as the principal's name.
-     * @return the string representation of the user ID
-     */
+) implements TelegramPrincipal {
+
     @Override
-    public String getName() {
-        return Long.toString(id);
+    public long getTelegramId() {
+        return id;
     }
 }
