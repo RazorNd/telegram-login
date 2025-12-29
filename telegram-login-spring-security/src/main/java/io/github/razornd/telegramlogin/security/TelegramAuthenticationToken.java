@@ -44,6 +44,15 @@ public class TelegramAuthenticationToken extends AbstractAuthenticationToken {
      */
     private final TelegramUser principal;
 
+    /**
+     * Represents the hash value used to verify the authenticity of the authentication data in Telegram
+     * authentication. This value provides a mechanism to ensure the integrity and authenticity of the
+     * provided authentication details. The hash may be {@code null} if not set or if credentials have
+     * been erased.
+     *
+     * @see TelegramAuthenticationToken#getCredentials()
+     * @see TelegramAuthenticationToken#eraseCredentials()
+     */
     @Nullable
     private String hash;
 

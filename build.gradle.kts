@@ -14,13 +14,33 @@
  *    limitations under the License.
  */
 
+import org.jreleaser.model.Active
+
+/*
+ * Copyright 2025 Daniil Razorenov
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
 plugins {
     id("org.springframework.boot") apply false
+    id("org.jreleaser") version "1.21.0"
+    java
 }
 
 allprojects {
     group = "io.github.razornd.telegramlogin"
-    version = "0.1.0-SNAPSHOT"
+    version = "0.1.0"
 
     repositories {
         mavenCentral()
@@ -38,7 +58,6 @@ subprojects {
 
     plugins.withType<JavaLibraryPlugin> {
         apply(plugin = "maven-publish")
-        apply(plugin = "signing")
 
         configure<JavaPluginExtension> {
             withSourcesJar()
@@ -83,10 +102,6 @@ subprojects {
             }
         }
 
-        configure<SigningExtension> {
-            sign(the<PublishingExtension>().publications["maven"])
-        }
-
         tasks.withType<Javadoc> {
             (options as StandardJavadocDocletOptions).addBooleanOption("html5", true)
         }
@@ -101,5 +116,32 @@ subprojects {
         "implementation"(platform("org.springframework.boot:spring-boot-dependencies:$springBootVersion"))
         "testImplementation"("org.springframework.boot:spring-boot-starter-test")
         "testRuntimeOnly"("org.junit.platform:junit-platform-launcher")
+    }
+}
+
+jreleaser {
+    signing {
+        active = Active.RELEASE
+        armored = true
+        verify = false
+    }
+    deploy {
+        maven {
+            mavenCentral {
+                subprojects {
+                    plugins.withType<JavaLibraryPlugin> {
+                        create(name) {
+                            active = Active.RELEASE
+
+                            url = "https://central.sonatype.com/api/v1/publisher"
+
+                            applyMavenCentralRules = true
+
+                            stagingRepository(layout.buildDirectory.dir("repo/maven").get().asFile.path)
+                        }
+                    }
+                }
+            }
+        }
     }
 }
