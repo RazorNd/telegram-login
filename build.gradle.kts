@@ -58,6 +58,7 @@ subprojects {
 
     plugins.withType<JavaLibraryPlugin> {
         apply(plugin = "maven-publish")
+        apply(plugin = "signing")
 
         configure<JavaPluginExtension> {
             withSourcesJar()
@@ -102,6 +103,10 @@ subprojects {
             }
         }
 
+        configure<SigningExtension> {
+            sign(the<PublishingExtension>().publications["maven"])
+        }
+
         tasks.withType<Javadoc> {
             (options as StandardJavadocDocletOptions).addBooleanOption("html5", true)
         }
@@ -120,11 +125,6 @@ subprojects {
 }
 
 jreleaser {
-    signing {
-        active = Active.RELEASE
-        armored = true
-        verify = false
-    }
     deploy {
         maven {
             mavenCentral {
@@ -132,11 +132,9 @@ jreleaser {
                     plugins.withType<JavaLibraryPlugin> {
                         create(name) {
                             active = Active.RELEASE
-
                             url = "https://central.sonatype.com/api/v1/publisher"
-
                             applyMavenCentralRules = true
-
+                            sign = false
                             stagingRepository(layout.buildDirectory.dir("repo/maven").get().asFile.path)
                         }
                     }
