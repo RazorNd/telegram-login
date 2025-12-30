@@ -40,7 +40,7 @@ plugins {
 
 allprojects {
     group = "io.github.razornd.telegramlogin"
-    version = "0.1.0"
+    version = "0.2.0-SNAPSHOT"
 
     repositories {
         mavenCentral()
@@ -128,13 +128,13 @@ jreleaser {
     deploy {
         maven {
             mavenCentral {
-                subprojects {
-                    plugins.withType<JavaLibraryPlugin> {
-                        create(name) {
-                            active = Active.RELEASE
-                            url = "https://central.sonatype.com/api/v1/publisher"
-                            applyMavenCentralRules = true
-                            sign = false
+                create(name) {
+                    active = Active.RELEASE
+                    url = "https://central.sonatype.com/api/v1/publisher"
+                    applyMavenCentralRules = true
+                    sign = false
+                    subprojects {
+                        plugins.withType<JavaLibraryPlugin> {
                             stagingRepository(layout.buildDirectory.dir("repo/maven").get().asFile.path)
                         }
                     }

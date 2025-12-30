@@ -1,6 +1,7 @@
 # Telegram Login for Spring Security
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Version](https://img.shields.io/badge/Version-0.1.0-yellow.svg)](https://github.com/RazorNd/telegram-login)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.0.1-brightgreen.svg)](https://spring.io/projects/spring-boot)
 [![Java](https://img.shields.io/badge/Java-17%2B-orange.svg)](https://www.oracle.com/java/technologies/javase-jdk17-downloads.html)
 
@@ -28,7 +29,7 @@ configuration.
 
 ```kotlin
 dependencies {
-    implementation("io.github.razornd.telegramlogin:spring-boot-starter-telegram-login:0.1.0-SNAPSHOT")
+    implementation("io.github.razornd.telegramlogin:spring-boot-starter-telegram-login:0.1.0")
 }
 ```
 
@@ -39,7 +40,7 @@ dependencies {
 <dependency>
     <groupId>io.github.razornd.telegramlogin</groupId>
     <artifactId>spring-boot-starter-telegram-login</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.1.0</version>
 </dependency>
 ```
 
