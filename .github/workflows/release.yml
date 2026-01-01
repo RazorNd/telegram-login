@@ -2,14 +2,11 @@ name: Release
 
 on: [ workflow_dispatch ]
 
-permissions:
-  contents: write
-
 jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-java@v5
