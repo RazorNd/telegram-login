@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Daniil Razorenov
+ * Copyright 2026 Daniil Razorenov
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -44,14 +44,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 import java.time.Instant;
-import java.util.HexFormat;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
@@ -61,7 +55,6 @@ import static org.springframework.security.test.web.servlet.response.SecurityMoc
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher.pathPattern;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class TelegramLoginConfigurerTest {
@@ -87,12 +80,9 @@ class TelegramLoginConfigurerTest {
         var context = createContext(DefaultConfig.class);
         var mockMvc = createMockMvc(context);
 
-        var date = currentDate();
+        var date = TestHashUtils.currentDate();
 
-        mockMvc.perform(get("/login/telegram")
-                                .param("id", "6976597")
-                                .param("auth_date", date)
-                                .param("hash", calcHash(Map.of("id", "6976597", "auth_date", date))))
+        mockMvc.perform(telegramGet("/login/telegram", Map.of("id", "6976597", "auth_date", date)))
                .andExpect(authenticated().withUsername("6976597"));
     }
 
@@ -101,12 +91,9 @@ class TelegramLoginConfigurerTest {
         var context = createContext(CustomUrlConfig.class);
         var mockMvc = createMockMvc(context);
 
-        var date = currentDate();
+        var date = TestHashUtils.currentDate();
 
-        mockMvc.perform(get("/custom/login")
-                                .param("id", "71603")
-                                .param("auth_date", date)
-                                .param("hash", calcHash(Map.of("id", "71603", "auth_date", date))))
+        mockMvc.perform(telegramGet("/custom/login", Map.of("id", "71603", "auth_date", date)))
                .andExpect(authenticated().withUsername("71603"));
     }
 
@@ -115,12 +102,9 @@ class TelegramLoginConfigurerTest {
         var context = createContext(SuccessHandlerConfig.class);
         var mockMvc = createMockMvc(context);
 
-        var date = currentDate();
+        var date = TestHashUtils.currentDate();
 
-        mockMvc.perform(get("/login/telegram")
-                                .param("id", "11761")
-                                .param("auth_date", date)
-                                .param("hash", calcHash(Map.of("id", "11761", "auth_date", date))))
+        mockMvc.perform(telegramGet("/login/telegram", Map.of("id", "11761", "auth_date", date)))
                .andExpect(authenticated().withUsername("11761"));
 
         verify(context.getBean(AuthenticationSuccessHandler.class)).onAuthenticationSuccess(any(), any(), any(), any());
@@ -131,7 +115,7 @@ class TelegramLoginConfigurerTest {
         var context = createContext(FailureHandlerConfig.class);
         var mockMvc = createMockMvc(context);
 
-        var date = currentDate();
+        var date = TestHashUtils.currentDate();
 
         mockMvc.perform(get("/login/telegram")
                                 .param("id", "53281216")
@@ -145,12 +129,9 @@ class TelegramLoginConfigurerTest {
         var context = createContext(CustomValidatorConfig.class);
         var mockMvc = createMockMvc(context);
 
-        var date = currentDate();
+        var date = TestHashUtils.currentDate();
 
-        mockMvc.perform(get("/login/telegram")
-                                .param("id", "42")
-                                .param("auth_date", date)
-                                .param("hash", calcHash(Map.of("id", "42", "auth_date", date))))
+        mockMvc.perform(telegramGet("/login/telegram", Map.of("id", "42", "auth_date", date)))
                .andExpect(authenticated().withUsername("42"));
 
         verify(context.getBean(TelegramAuthenticationValidator.class)).validate(any());
@@ -161,7 +142,7 @@ class TelegramLoginConfigurerTest {
         var context = createContext(CustomAuthenticationManagerConfig.class);
         var mockMvc = createMockMvc(context);
         var authTokenCaptor = ArgumentCaptor.forClass(TelegramAuthenticationToken.class);
-        var date = currentDate();
+        var date = TestHashUtils.currentDate();
         var expectedHash = "any";
         var expectedUser = new TelegramUser(42L,
                                             Instant.ofEpochSecond(Long.parseLong(date)),
@@ -200,11 +181,8 @@ class TelegramLoginConfigurerTest {
         var context = createContext(CustomSecurityContextRepositoryConfig.class);
         var mockMvc = createMockMvc(context);
 
-        var date = currentDate();
-        mockMvc.perform(get("/login/telegram")
-                                .param("id", "42")
-                                .param("auth_date", date)
-                                .param("hash", calcHash(Map.of("id", "42", "auth_date", date))))
+        var date = TestHashUtils.currentDate();
+        mockMvc.perform(telegramGet("/login/telegram", Map.of("id", "42", "auth_date", date)))
                .andExpect(authenticated());
 
         verify(context.getBean(SecurityContextRepository.class)).saveContext(any(), any(), any());
@@ -215,11 +193,8 @@ class TelegramLoginConfigurerTest {
         var context = createContext(CustomAuthenticationDetailsSourceConfig.class);
         var mockMvc = createMockMvc(context);
 
-        var date = currentDate();
-        mockMvc.perform(get("/login/telegram")
-                                .param("id", "42")
-                                .param("auth_date", date)
-                                .param("hash", calcHash(Map.of("id", "42", "auth_date", date))))
+        var date = TestHashUtils.currentDate();
+        mockMvc.perform(telegramGet("/login/telegram", Map.of("id", "42", "auth_date", date)))
                .andExpect(authenticated());
 
         //noinspection unchecked
@@ -231,7 +206,7 @@ class TelegramLoginConfigurerTest {
         var context = createContext(CustomHashValidatorConfig.class);
         var mockMvc = createMockMvc(context);
 
-        var date = currentDate();
+        var date = TestHashUtils.currentDate();
 
         mockMvc.perform(get("/login/telegram")
                                 .param("id", "42")
@@ -247,12 +222,9 @@ class TelegramLoginConfigurerTest {
         var context = createContext(CustomRequestMatcherConfig.class);
         var mockMvc = createMockMvc(context);
 
-        var date = currentDate();
+        var date = TestHashUtils.currentDate();
 
-        mockMvc.perform(options("/custom/path")
-                                .param("id", "42")
-                                .param("auth_date", date)
-                                .param("hash", calcHash(Map.of("id", "42", "auth_date", date))))
+        mockMvc.perform(telegramRequest(HttpMethod.OPTIONS, "/custom/path", Map.of("id", "42", "auth_date", date)))
                .andExpect(authenticated());
     }
 
@@ -261,13 +233,21 @@ class TelegramLoginConfigurerTest {
         var context = createContext(HashValidatorAsBeanConfig.class);
         var mockMvc = createMockMvc(context);
 
-        var date = currentDate();
+        var date = TestHashUtils.currentDate();
 
-        mockMvc.perform(get("/login/telegram")
-                                .param("id", "616686")
-                                .param("auth_date", date)
-                                .param("hash", calcHash(Map.of("id", "616686", "auth_date", date))))
+        mockMvc.perform(telegramGet("/login/telegram", Map.of("id", "616686", "auth_date", date)))
                .andExpect(authenticated().withUsername("616686"));
+    }
+
+    private static org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder telegramGet(String url, Map<String, String> params) {
+        return telegramRequest(HttpMethod.GET, url, params);
+    }
+
+    private static org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder telegramRequest(HttpMethod method, String url, Map<String, String> params) {
+        var builder = org.springframework.test.web.servlet.request.MockMvcRequestBuilders.request(method, url);
+        params.forEach(builder::param);
+        builder.param("hash", TestHashUtils.calcHash(BOT_TOKEN, params));
+        return builder;
     }
 
     @Configuration
@@ -378,7 +358,7 @@ class TelegramLoginConfigurerTest {
         @Bean
         public AuthenticationConverter authenticationConverter() {
             var mock = mock(AuthenticationConverter.class);
-            when(mock.convert(any())).thenReturn(new TestingAuthenticationToken("user", "pass", "ROLE_USER"));
+            doReturn(new TestingAuthenticationToken("user", "pass", "ROLE_USER")).when(mock).convert(any());
             return mock;
         }
 
@@ -483,30 +463,5 @@ class TelegramLoginConfigurerTest {
         public SecurityFilterChain securityFilterChain(HttpSecurity http) {
             return http.with(new TelegramLoginConfigurer<>()).build();
         }
-    }
-
-    private static String calcHash(Map<String, String> params) throws Exception {
-        var dataString = params.entrySet()
-                               .stream()
-                               .filter(e -> e.getValue() != null)
-                               .sorted(Map.Entry.comparingByKey())
-                               .map(e -> e.getKey() + "=" + e.getValue())
-                               .collect(Collectors.joining("\n"));
-
-        var sha256Digest = MessageDigest.getInstance("SHA-256");
-
-        sha256Digest.update(BOT_TOKEN.getBytes(StandardCharsets.UTF_8));
-
-        var hmac = Mac.getInstance("HmacSHA256");
-
-        hmac.init(new SecretKeySpec(sha256Digest.digest(), "HmacSHA256"));
-
-        hmac.update(dataString.getBytes(StandardCharsets.UTF_8));
-
-        return HexFormat.of().formatHex(hmac.doFinal());
-    }
-
-    private static String currentDate() {
-        return String.valueOf(Instant.now().getEpochSecond());
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Daniil Razorenov
+ * Copyright 2026 Daniil Razorenov
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -22,9 +22,11 @@ dependencies {
     api("org.springframework.security:spring-security-web")
     api("org.springframework.security:spring-security-config")
     implementation("org.springframework:spring-webmvc")
+    implementation("org.springframework:spring-webflux")
     implementation("org.apache.tomcat.embed:tomcat-embed-core")
 
     testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("io.projectreactor:reactor-test")
 }
 
 publishing.publications.named<MavenPublication>("maven") {

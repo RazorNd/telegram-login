@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Daniil Razorenov
+ * Copyright 2026 Daniil Razorenov
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * An implementation of {@link org.springframework.security.core.Authentication} for a
@@ -42,15 +42,20 @@ public class TelegramAuthentication extends AbstractAuthenticationToken {
 
     /**
      * Creates a new authenticated token for the specified {@link TelegramPrincipal}.
-     * @param principal the authenticated Telegram principal
+     *
+     * @param principal   the authenticated Telegram principal
      * @param authorities the authorities granted to the user
      */
-    public TelegramAuthentication(TelegramPrincipal principal, List<? extends GrantedAuthority> authorities) {
+    public TelegramAuthentication(TelegramPrincipal principal, Collection<? extends GrantedAuthority> authorities) {
         super(authorities);
         this.principal = principal;
         setAuthenticated(true);
     }
 
+    /**
+     * Returns the Telegram ID of the authenticated user as the name of this principal.
+     * @return the Telegram ID as a {@link String}
+     */
     @Override
     public String getName() {
         return String.valueOf(principal.getTelegramId());
@@ -58,6 +63,7 @@ public class TelegramAuthentication extends AbstractAuthenticationToken {
 
     /**
      * Telegram authentication does not use credentials after the initial validation.
+     *
      * @return {@code null}
      */
     @Override
@@ -68,6 +74,7 @@ public class TelegramAuthentication extends AbstractAuthenticationToken {
 
     /**
      * Returns the authenticated {@link TelegramPrincipal}.
+     *
      * @return the principal
      */
     @Override
