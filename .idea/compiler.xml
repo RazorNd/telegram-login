@@ -8,6 +8,9 @@
       <module name="telegram-login.samples.mvc-sample" options="-parameters" />
       <module name="telegram-login.samples.mvc-sample.main" options="-parameters" />
       <module name="telegram-login.samples.mvc-sample.test" options="-parameters" />
+      <module name="telegram-login.samples.webflux-sample" options="-parameters" />
+      <module name="telegram-login.samples.webflux-sample.main" options="-parameters" />
+      <module name="telegram-login.samples.webflux-sample.test" options="-parameters" />
     </option>
   </component>
 </project>

@@ -14,20 +14,22 @@
  *    limitations under the License.
  */
 
+package io.github.razornd.telegramlogin.sample.webflux;
 
-pluginManagement {
-    val springBootVersion: String by settings
-    plugins {
-        id("org.springframework.boot") version springBootVersion
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
+
+@RestController
+@RequestMapping("/api/testing")
+class SimpleController {
+
+    @GetMapping("/hello")
+    public ResponseEntity<?> helloWorld() {
+        return ResponseEntity.ok(Map.of("message", "Hello World!"));
     }
+
 }
-
-rootProject.name = "telegram-login"
-
-include(
-    "telegram-login-spring-security",
-    "telegram-login-spring-boot-autoconfigure",
-    "spring-boot-starter-telegram-login",
-    "samples:mvc-sample",
-    "samples:webflux-sample"
-)

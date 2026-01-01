@@ -15,19 +15,17 @@
  */
 
 
-pluginManagement {
-    val springBootVersion: String by settings
-    plugins {
-        id("org.springframework.boot") version springBootVersion
-    }
+plugins {
+    id("org.springframework.boot")
 }
 
-rootProject.name = "telegram-login"
+dependencies {
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
+    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
+    implementation(project(":spring-boot-starter-telegram-login"))
 
-include(
-    "telegram-login-spring-security",
-    "telegram-login-spring-boot-autoconfigure",
-    "spring-boot-starter-telegram-login",
-    "samples:mvc-sample",
-    "samples:webflux-sample"
-)
+    testImplementation("org.springframework.boot:spring-boot-starter-webflux-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-thymeleaf-test")
+    testImplementation("org.htmlunit:htmlunit")
+    testImplementation("io.projectreactor:reactor-test")
+}

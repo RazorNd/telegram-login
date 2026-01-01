@@ -14,20 +14,16 @@
  *    limitations under the License.
  */
 
+package io.github.razornd.telegramlogin.sample.webflux;
 
-pluginManagement {
-    val springBootVersion: String by settings
-    plugins {
-        id("org.springframework.boot") version springBootVersion
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+class WebfluxSampleApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(WebfluxSampleApplication.class, args);
     }
+
 }
-
-rootProject.name = "telegram-login"
-
-include(
-    "telegram-login-spring-security",
-    "telegram-login-spring-boot-autoconfigure",
-    "spring-boot-starter-telegram-login",
-    "samples:mvc-sample",
-    "samples:webflux-sample"
-)
