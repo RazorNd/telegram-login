@@ -17,6 +17,7 @@
 package io.github.razornd.telegramlogin.autoconfigure;
 
 import io.github.razornd.telegramlogin.security.HashValidator;
+import io.github.razornd.telegramlogin.security.config.TelegramLoginServerSecurityConfigurer;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -33,6 +34,14 @@ import org.springframework.security.web.server.authentication.RedirectServerAuth
 
 import static io.github.razornd.telegramlogin.security.config.TelegramLoginServerSecurityConfigurer.telegramLogin;
 
+/**
+ * {@link AutoConfiguration @AutoConfiguration} for Telegram Login in a WebFlux-based web application.
+ *
+ * <p>Configures a {@link SecurityWebFilterChain} if the default security is missing.
+ *
+ * @author Daniil Razorenov
+ * @see TelegramLoginServerSecurityConfigurer
+ */
 @AutoConfiguration(before = ReactiveWebSecurityAutoConfiguration.class,
                    after = HashValidationAutoConfiguration.class,
                    afterName = "org.springframework.boot.webflux.autoconfigure.WebFluxAutoConfiguration")
@@ -44,6 +53,14 @@ public class TelegramWebfluxLoginAutoConfiguration {
     @Configuration(proxyBeanMethods = false)
     @ConditionalOnMissingBean(SecurityWebFilterChain.class)
     static class TelegramWebfluxLoginConfiguration {
+
+        /**
+         * Creates a default {@link SecurityWebFilterChain} configured with {@link TelegramLoginServerSecurityConfigurer}.
+         *
+         * @param http          the {@link ServerHttpSecurity} to configure
+         * @param hashValidator the {@link HashValidator} provider
+         * @return the configured {@link SecurityWebFilterChain}
+         */
         @Bean
         SecurityWebFilterChain telegramLoginSecurityFilterChain(ServerHttpSecurity http,
                                                                 ObjectProvider<HashValidator> hashValidator) {
