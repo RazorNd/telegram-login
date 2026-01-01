@@ -148,3 +148,5 @@ This project is licensed under the Apache License, Version 2.0. See the [LICENSE
 
 ---
 Developed by [Daniil Razorenov](https://github.com/razornd)
+
+© 2026 Daniil Razorenov

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Daniil Razorenov
+ * Copyright 2026 Daniil Razorenov
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 import org.jreleaser.model.Active
 
 /*
- * Copyright 2025 Daniil Razorenov
+ * Copyright 2026 Daniil Razorenov
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -34,13 +34,13 @@ import org.jreleaser.model.Active
 
 plugins {
     id("org.springframework.boot") apply false
-    id("org.jreleaser") version "1.21.0"
+    id("org.jreleaser") version "1.22.0"
     java
 }
 
 allprojects {
     group = "io.github.razornd.telegramlogin"
-    version = "0.2.0-SNAPSHOT"
+    version = "0.2.0"
 
     repositories {
         mavenCentral()
@@ -126,6 +126,15 @@ subprojects {
 
 jreleaser {
     deploy {
+        release {
+            github {
+                changelog {
+                    enabled = true
+                    links = true
+                    formatted = Active.ALWAYS
+                }
+            }
+        }
         maven {
             mavenCentral {
                 create(name) {
