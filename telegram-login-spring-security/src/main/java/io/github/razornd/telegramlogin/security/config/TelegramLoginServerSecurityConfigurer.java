@@ -27,6 +27,7 @@ import org.springframework.security.web.server.authentication.*;
 import org.springframework.security.web.server.context.ServerSecurityContextRepository;
 import org.springframework.security.web.server.context.WebSessionServerSecurityContextRepository;
 import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher;
+import org.springframework.util.Assert;
 
 import java.util.List;
 import java.util.Objects;
@@ -235,6 +236,7 @@ public class TelegramLoginServerSecurityConfigurer {
     }
 
     private HashValidator getHashValidator() {
-        return Objects.requireNonNull(hashValidator, "HashValidator must be set");
+        Assert.notNull(hashValidator, "Bot token or HashValidator must be set");
+        return hashValidator;
     }
 }
