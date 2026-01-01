@@ -1,17 +1,18 @@
 # Telegram Login for Spring Security
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Version](https://img.shields.io/badge/Version-0.1.0-yellow.svg)](https://github.com/RazorNd/telegram-login)
+[![Version](https://img.shields.io/badge/Version-0.2.0-yellow.svg)](https://github.com/RazorNd/telegram-login)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.0.1-brightgreen.svg)](https://spring.io/projects/spring-boot)
 [![Java](https://img.shields.io/badge/Java-17%2B-orange.svg)](https://www.oracle.com/java/technologies/javase-jdk17-downloads.html)
 
 This project provides seamless integration of the [Telegram Login Widget](https://core.telegram.org/widgets/login) with
-Spring Security. It includes a Spring Boot starter for quick setup and a dedicated Spring Security configurer for manual
-configuration.
+Spring Security. It includes a Spring Boot starter for quick setup and dedicated Spring Security configurers for both
+Servlet and WebFlux applications.
 
 ## Features
 
 - **Spring Security Integration**: Native support for Telegram authentication in the Spring Security filter chain.
+- **Servlet and WebFlux Support**: Comprehensive support for both traditional MVC and modern reactive applications.
 - **Spring Boot Auto-configuration**: Automatic setup of security filters and validators with minimal configuration.
 - **Data Integrity Validation**: Built-in HMAC-SHA256 validation of data received from Telegram.
 - **Expiration Check**: Automatic validation of `auth_date` to prevent replay attacks (default 24h).
@@ -29,7 +30,7 @@ configuration.
 
 ```kotlin
 dependencies {
-    implementation("io.github.razornd.telegramlogin:spring-boot-starter-telegram-login:0.1.0")
+    implementation("io.github.razornd.telegramlogin:spring-boot-starter-telegram-login:0.2.0")
 }
 ```
 
@@ -40,7 +41,7 @@ dependencies {
 <dependency>
     <groupId>io.github.razornd.telegramlogin</groupId>
     <artifactId>spring-boot-starter-telegram-login</artifactId>
-    <version>0.1.0</version>
+    <version>0.2.0</version>
 </dependency>
 ```
 
@@ -55,7 +56,11 @@ dependencies {
        bot-token: YOUR_BOT_TOKEN
    ```
 
-3. (Optional) If you have a custom security configuration, you can use `TelegramLoginConfigurer`:
+3. (Optional) If you have a custom security configuration, you can use the provided configurers:
+
+   ### Spring MVC (Servlet)
+
+   Use `TelegramLoginConfigurer`:
 
    ```java
    
@@ -77,6 +82,31 @@ dependencies {
        }
    }
    ```
+
+   ### Spring WebFlux (Reactive)
+
+   Use `TelegramLoginServerSecurityConfigurer`:
+
+   ```java
+   
+   @Configuration
+   @EnableWebFluxSecurity
+   public class SecurityConfig {
+   
+       @Bean
+       public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
+           return telegramLogin(http.authorizeExchange(exchanges -> exchanges
+                           .pathMatchers("/login").permitAll()
+                           .anyRequest().authenticated()
+                   ),
+                   telegram -> telegram.botToken("YOUR_BOT_TOKEN")
+           )
+           .exceptionHandling(ex -> ex.authenticationEntryPoint(new RedirectServerAuthenticationEntryPoint("/login")))
+           .build();
+       }
+   }
+   ```
+
 4. Add the Telegram Login Widget to your login page:
    ```html
    <script async src="https://telegram.org/js/telegram-widget.js?22" 
@@ -99,9 +129,9 @@ The following properties can be used to configure the Telegram Login integration
 1. The user clicks the Telegram Login Widget on your site.
 2. Telegram redirects the user back to your site with authentication data as query parameters (id, first_name,
    last_name, username, photo_url, auth_date, hash).
-3. `TelegramAuthenticationConverter` extracts this data and creates a `TelegramAuthenticationToken`, extracting the
-   `hash` separately for validation.
-4. `TelegramAuthenticationProvider` validates the token:
+3. `TelegramAuthenticationConverter` (or `ReactiveTelegramAuthenticationConverter` for WebFlux) extracts this data and
+   creates a `TelegramAuthenticationToken`, extracting the `hash` separately for validation.
+4. `TelegramAuthenticationProvider` (or `ReactiveTelegramAuthenticationManager` for WebFlux) validates the token:
     - `HashValidator` verifies the HMAC-SHA256 signature using your bot token and the `hash` from the token's
       credentials.
     - `AuthDateExpirationValidator` ensures the data is fresh.
@@ -109,8 +139,8 @@ The following properties can be used to configure the Telegram Login integration
 
 ## Samples
 
-Check the [samples/mvc-sample](samples/mvc-sample) directory for a complete working example of a Spring Boot MVC
-application with Telegram Login.
+- [samples/mvc-sample](samples/mvc-sample): A complete working example of a Spring Boot MVC application.
+- [samples/webflux-sample](samples/webflux-sample): A complete working example of a Spring Boot WebFlux application.
 
 ## License
 
