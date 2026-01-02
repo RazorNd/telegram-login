@@ -16,12 +16,17 @@
 
 package io.github.razornd.telegramlogin.security;
 
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.stubbing.answers.Returns;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.FactorGrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -38,15 +43,13 @@ class TelegramAuthenticationProviderTest {
                                                                    null,
                                                                    null);
 
-    TelegramAuthenticationValidator validator = mock();
+    TelegramAuthenticationValidator validator = mock(new Returns(ValidationResult.valid()));
     TelegramAuthenticationProvider provider = new TelegramAuthenticationProvider(validator);
 
     @Test
     void authenticate() {
         var testAuthToken = new TestAuthenticationToken(TEST_USER, TEST_USER_HASH);
         var factorAuthority = FactorGrantedAuthority.fromFactor(TelegramAuthenticationProvider.AUTHENTICATION_FACTOR);
-
-        doReturn(ValidationResult.valid()).when(validator).validate(any());
 
         var actual = provider.authenticate(testAuthToken);
 
@@ -59,8 +62,6 @@ class TelegramAuthenticationProviderTest {
     @Test
     void authenticateShouldValidateAuthentication() {
         var testAuthToken = new TestAuthenticationToken(TEST_USER, TEST_USER_HASH);
-
-        doReturn(ValidationResult.valid()).when(validator).validate(any());
 
         provider.authenticate(testAuthToken);
 
@@ -76,6 +77,44 @@ class TelegramAuthenticationProviderTest {
         assertThatThrownBy(() -> provider.authenticate(testAuthToken))
                 .isInstanceOf(BadCredentialsException.class)
                 .hasMessage("test reason");
+    }
+
+    @Test
+    void authenticateWithCustomUserService() {
+        var customUserService = mock(TelegramUserService.class);
+
+        var principal = mock(TelegramPrincipal.class);
+        doReturn(principal).when(customUserService).loadUser(any());
+
+        provider.setUserService(customUserService);
+
+        var testAuthToken = new TelegramAuthenticationToken(TEST_USER, TEST_USER_HASH);
+        var actual = provider.authenticate(testAuthToken);
+
+        assertThat(actual).extracting(TelegramAuthentication::getPrincipal).isSameAs(principal);
+        verify(customUserService).loadUser(TEST_USER);
+    }
+
+    @Test
+    void authenticateShouldUseAuthoritiesFromPrincipal() {
+        var principal = mock(TelegramPrincipal.class);
+        var customUserService = mock(TelegramUserService.class);
+
+        doReturn(Set.of(new SimpleGrantedAuthority("ROLE_ADMIN"))).when(principal).getAuthorities();
+        doReturn(principal).when(customUserService).loadUser(any());
+
+        provider.setUserService(customUserService);
+
+        var authenticationToken = new TelegramAuthenticationToken(TEST_USER, TEST_USER_HASH);
+
+        var actual = provider.authenticate(authenticationToken);
+
+        assertThat(actual)
+                .extracting(TelegramAuthentication::getAuthorities)
+                .asInstanceOf(InstanceOfAssertFactories.collection(GrantedAuthority.class))
+                .extracting(GrantedAuthority::getAuthority)
+                .containsExactlyInAnyOrder("ROLE_ADMIN", "FACTOR_TELEGRAM");
+
     }
 
     @Test

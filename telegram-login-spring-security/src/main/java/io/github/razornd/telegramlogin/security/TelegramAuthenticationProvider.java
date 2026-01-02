@@ -21,9 +21,11 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.FactorGrantedAuthority;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Set;
 
 /**
  * An {@link AuthenticationProvider} for Telegram authentication.
@@ -45,6 +47,8 @@ public class TelegramAuthenticationProvider implements AuthenticationProvider {
     public static final String AUTHENTICATION_FACTOR = "TELEGRAM";
 
     private final TelegramAuthenticationValidator validator;
+
+    private TelegramUserService userService = new SimpleTelegramUserService();
 
     /**
      * Creates a new {@link TelegramAuthenticationProvider} with the given {@link TelegramAuthenticationValidator}.
@@ -70,8 +74,12 @@ public class TelegramAuthenticationProvider implements AuthenticationProvider {
             throw new BadCredentialsException(invalid.reason());
         }
 
-        return new TelegramAuthentication(telegramAuthToken.getPrincipal(),
-                                          List.of(FactorGrantedAuthority.fromFactor(AUTHENTICATION_FACTOR)));
+        var fetchedUser = userService.loadUser(telegramAuthToken.getPrincipal());
+
+        var authorities = new ArrayList<GrantedAuthority>(fetchedUser.getAuthorities());
+        authorities.add(FactorGrantedAuthority.fromFactor(AUTHENTICATION_FACTOR));
+
+        return new TelegramAuthentication(fetchedUser, Set.copyOf(authorities));
     }
 
     /**
@@ -82,5 +90,14 @@ public class TelegramAuthenticationProvider implements AuthenticationProvider {
     @Override
     public boolean supports(Class<?> authentication) {
         return TelegramAuthenticationToken.class.isAssignableFrom(authentication);
+    }
+
+    /**
+     * Sets the {@link TelegramUserService} to use for loading user details.
+     *
+     * @param userService the user service to use
+     */
+    public void setUserService(TelegramUserService userService) {
+        this.userService = userService;
     }
 }
