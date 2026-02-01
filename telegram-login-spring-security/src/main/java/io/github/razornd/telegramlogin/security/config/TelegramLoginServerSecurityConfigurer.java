@@ -73,6 +73,9 @@ public class TelegramLoginServerSecurityConfigurer {
 
     private ServerAuthenticationConverter authenticationConverter = new ReactiveTelegramAuthenticationConverter();
 
+    @Nullable
+    private ReactiveTelegramUserService userService;
+
     /**
      * Configures Telegram Login for the given {@link ServerHttpSecurity}.
      *
@@ -195,6 +198,17 @@ public class TelegramLoginServerSecurityConfigurer {
         return this;
     }
 
+    /**
+     * Sets the {@link ReactiveTelegramUserService} to use for loading user details.
+     *
+     * @param userService the reactive user service to use
+     * @return the {@link TelegramLoginServerSecurityConfigurer} for further customizations
+     */
+    public TelegramLoginServerSecurityConfigurer userService(ReactiveTelegramUserService userService) {
+        this.userService = userService;
+        return this;
+    }
+
     private ServerHttpSecurity configure(ServerHttpSecurity http) {
         var webFilter = new AuthenticationWebFilter(getAuthenticationManager());
         webFilter.setRequiresAuthenticationMatcher(getRequiresAuthenticationMatcher());
@@ -232,7 +246,11 @@ public class TelegramLoginServerSecurityConfigurer {
         var validatorList = Objects.requireNonNullElseGet(validators,
                                                           () -> List.of(getHashValidator(), expirationValidator));
 
-        return new ReactiveTelegramAuthenticationManager(new CompositeTelegramAuthenticationValidator(validatorList));
+        var manager = new ReactiveTelegramAuthenticationManager(new CompositeTelegramAuthenticationValidator(validatorList));
+        if (userService != null) {
+            manager.setUserService(userService);
+        }
+        return manager;
     }
 
     private HashValidator getHashValidator() {
