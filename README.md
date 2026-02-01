@@ -16,6 +16,8 @@ Servlet and WebFlux applications.
 - **Spring Boot Auto-configuration**: Automatic setup of security filters and validators with minimal configuration.
 - **Data Integrity Validation**: Built-in HMAC-SHA256 validation of data received from Telegram.
 - **Expiration Check**: Automatic validation of `auth_date` to prevent replay attacks (default 24h).
+- **User Enrichment & Authorities**: Plug in `TelegramUserService` / `ReactiveTelegramUserService` to map Telegram users
+  to your own principals and grant roles.
 - **Extensible Architecture**: Custom validators and converters can be easily plugged in. Supports custom
   `TelegramPrincipal` implementations.
 
@@ -124,6 +126,60 @@ The following properties can be used to configure the Telegram Login integration
 |----------------------------|---------------------------------------------------|---------|
 | `telegram.login.bot-token` | Your Telegram Bot token used for hash validation. | -       |
 
+## Custom User Service
+
+If you want to map a Telegram user to your local domain model or add authorities, implement one of the user services
+and register it via the configurer.
+
+### Spring MVC (Servlet)
+
+```java
+
+@Bean
+TelegramUserService telegramUserService() {
+    return user -> new MyTelegramPrincipal(user, List.of(new SimpleGrantedAuthority("ROLE_USER")));
+}
+
+@Bean
+SecurityFilterChain securityFilterChain(HttpSecurity http, TelegramUserService userService) throws Exception {
+    http.authorizeHttpRequests(authorize -> authorize
+                .requestMatchers("/login").permitAll()
+                .anyRequest().authenticated()
+        )
+        .with(new TelegramLoginConfigurer<>(), telegram -> telegram
+                .botToken("YOUR_BOT_TOKEN")
+                .userService(userService)
+        )
+        .exceptionHandling(ex -> ex.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login")));
+    return http.build();
+}
+```
+
+### Spring WebFlux (Reactive)
+
+```java
+
+@Bean
+ReactiveTelegramUserService reactiveTelegramUserService() {
+    return user -> Mono.just(new MyTelegramPrincipal(user, List.of(new SimpleGrantedAuthority("ROLE_USER"))));
+}
+
+@Bean
+SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http,
+                                                 ReactiveTelegramUserService userService) {
+    return telegramLogin(http.authorizeExchange(exchanges -> exchanges
+                    .pathMatchers("/login").permitAll()
+                    .anyRequest().authenticated()
+            ),
+            telegram -> telegram
+                    .botToken("YOUR_BOT_TOKEN")
+                    .userService(userService)
+    )
+    .exceptionHandling(ex -> ex.authenticationEntryPoint(new RedirectServerAuthenticationEntryPoint("/login")))
+    .build();
+}
+```
+
 ## How it Works
 
 1. The user clicks the Telegram Login Widget on your site.
@@ -135,7 +191,8 @@ The following properties can be used to configure the Telegram Login integration
     - `HashValidator` verifies the HMAC-SHA256 signature using your bot token and the `hash` from the token's
       credentials.
     - `AuthDateExpirationValidator` ensures the data is fresh.
-5. If valid, the user is authenticated, and a `TelegramAuthentication` is created containing the `TelegramPrincipal`.
+5. If valid, a `TelegramPrincipal` is loaded (default: `TelegramUser`) and its authorities are propagated into
+   `TelegramAuthentication`.
 
 ## Samples
 
