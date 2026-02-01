@@ -16,10 +16,7 @@
 
 package io.github.razornd.telegramlogin.security.config;
 
-import io.github.razornd.telegramlogin.security.HashValidator;
-import io.github.razornd.telegramlogin.security.TelegramAuthenticationValidator;
-import io.github.razornd.telegramlogin.security.TestHashUtils;
-import io.github.razornd.telegramlogin.security.ValidationResult;
+import io.github.razornd.telegramlogin.security.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
@@ -211,6 +208,30 @@ class TelegramLoginServerSecurityConfigurerTest {
               .exchange();
 
         verify(customHashValidator).validate(any());
+    }
+
+    @Test
+    void shouldInvokeCustomUserService() {
+        ReactiveTelegramUserService userService = mock(ReactiveTelegramUserService.class);
+        doAnswer(invocation -> Mono.just((TelegramPrincipal) invocation.getArgument(0)))
+                .when(userService).loadUser(any());
+
+        String date = TestHashUtils.currentDate();
+        String hash = TestHashUtils.calcHash(BOT_TOKEN, Map.of("id", "1",
+                                                               "first_name", "John",
+                                                               "username", "john_doe",
+                                                               "auth_date", date));
+
+        WebTestClient client = createClient(t -> t.botToken(BOT_TOKEN)
+                                                  .loginProcessingUrl("/user-service/login")
+                                                  .userService(userService));
+
+        client.get()
+              .uri("/user-service/login?id=1&first_name=John&username=john_doe&auth_date=" + date + "&hash=" + hash)
+              .exchange()
+              .expectStatus().is3xxRedirection();
+
+        verify(userService).loadUser(any(TelegramUser.class));
     }
 
     private WebTestClient createClient(java.util.function.Consumer<TelegramLoginServerSecurityConfigurer> customizer) {

@@ -39,8 +39,13 @@ public class ReactiveTelegramAuthenticationManager implements ReactiveAuthentica
 
     private final TelegramAuthenticationValidator validator;
 
+    private ReactiveTelegramUserService userService =
+            new ReactiveAdapterTelegramUserService(new SimpleTelegramUserService());
+
     /**
-     * Creates a new {@link ReactiveTelegramAuthenticationManager} with the given {@link TelegramAuthenticationValidator}.
+     * Creates a new {@link ReactiveTelegramAuthenticationManager} with the given
+     * {@link TelegramAuthenticationValidator}.
+     *
      * @param validator the validator to use
      */
     public ReactiveTelegramAuthenticationManager(TelegramAuthenticationValidator validator) {
@@ -49,6 +54,7 @@ public class ReactiveTelegramAuthenticationManager implements ReactiveAuthentica
 
     /**
      * Authenticates the given {@link Authentication} object.
+     *
      * @param authentication the authentication request object
      * @return a {@link Mono} containing the successfully authenticated {@link TelegramAuthentication},
      * or an error {@link Mono} if authentication fails
@@ -63,7 +69,19 @@ public class ReactiveTelegramAuthenticationManager implements ReactiveAuthentica
             return Mono.error(new BadCredentialsException(invalid.reason()));
         }
 
-        return Mono.just(new TelegramAuthentication(token.getPrincipal(), Set.of()));
+        return userService.loadUser(token.getPrincipal()).map(this::createAuthority);
     }
 
+    /**
+     * Sets the {@link ReactiveTelegramUserService} to use for loading user details.
+     *
+     * @param userService the reactive user service to use
+     */
+    public void setUserService(ReactiveTelegramUserService userService) {
+        this.userService = userService;
+    }
+
+    private Authentication createAuthority(TelegramPrincipal principal) {
+        return new TelegramAuthentication(principal, Set.copyOf(principal.getAuthorities()));
+    }
 }

@@ -16,6 +16,11 @@
 
 package io.github.razornd.telegramlogin.security;
 
+import org.springframework.security.core.GrantedAuthority;
+
+import java.util.Collection;
+import java.util.Set;
+
 /**
  * Represents the principal entity authenticated using the Telegram Login Widget.
  * This interface defines a contract for retrieving the Telegram user's unique identifier.
@@ -28,5 +33,15 @@ public interface TelegramPrincipal {
      * @return the Telegram user's unique identifier as a long value
      */
     long getTelegramId();
+
+
+    /**
+     * Retrieves the authorities granted to the authenticated Telegram user.
+     *
+     * @return a collection of granted authorities (defaults to an empty set)
+     */
+    default Collection<? extends GrantedAuthority> getAuthorities() {
+        return Set.of();
+    }
 
 }

@@ -218,6 +218,19 @@ class TelegramLoginConfigurerTest {
     }
 
     @Test
+    void shouldInvokeCustomUserService() throws Exception {
+        var context = createContext(CustomUserServiceConfig.class);
+        var mockMvc = createMockMvc(context);
+
+        var date = TestHashUtils.currentDate();
+
+        mockMvc.perform(telegramGet("/login/telegram", Map.of("id", "42", "auth_date", date)))
+               .andExpect(authenticated().withUsername("42"));
+
+        verify(context.getBean(TelegramUserService.class)).loadUser(any());
+    }
+
+    @Test
     void shouldAuthenticateWithCustomRequestMatcher() throws Exception {
         var context = createContext(CustomRequestMatcherConfig.class);
         var mockMvc = createMockMvc(context);
@@ -433,6 +446,26 @@ class TelegramLoginConfigurerTest {
         public SecurityFilterChain securityFilterChain(HttpSecurity http) {
             http.with(new TelegramLoginConfigurer<>(), telegram -> telegram
                     .hashValidator(hashValidator())
+            );
+            return http.build();
+        }
+    }
+
+    @Configuration
+    @EnableWebSecurity
+    static class CustomUserServiceConfig {
+        @Bean
+        public TelegramUserService userService() {
+            var mock = mock(TelegramUserService.class);
+            doAnswer(returnsFirstArg()).when(mock).loadUser(any());
+            return mock;
+        }
+
+        @Bean
+        public SecurityFilterChain securityFilterChain(HttpSecurity http) {
+            http.with(new TelegramLoginConfigurer<>(), telegram -> telegram
+                    .userService(userService())
+                    .botToken(BOT_TOKEN)
             );
             return http.build();
         }

@@ -93,8 +93,12 @@ public class TelegramLoginConfigurer<B extends HttpSecurityBuilder<B>>
 
     private AuthenticationConverter authenticationConverter = new TelegramAuthenticationConverter();
 
+    @Nullable
+    private TelegramUserService userService;
+
     /**
      * Configures the validators to be used.
+     *
      * @param validators the validators
      * @return the {@link TelegramLoginConfigurer} for further customizations
      */
@@ -105,6 +109,7 @@ public class TelegramLoginConfigurer<B extends HttpSecurityBuilder<B>>
 
     /**
      * Sets the bot token to be used for hash validation.
+     *
      * @param botToken the Telegram bot token
      * @return the {@link TelegramLoginConfigurer} for further customizations
      */
@@ -114,6 +119,7 @@ public class TelegramLoginConfigurer<B extends HttpSecurityBuilder<B>>
 
     /**
      * Sets the {@link HashValidator} to be used.
+     *
      * @param hashValidator the hash validator
      * @return the {@link TelegramLoginConfigurer} for further customizations
      */
@@ -124,6 +130,7 @@ public class TelegramLoginConfigurer<B extends HttpSecurityBuilder<B>>
 
     /**
      * Sets the {@link AuthenticationSuccessHandler} to be used.
+     *
      * @param successHandler the success handler
      * @return the {@link TelegramLoginConfigurer} for further customizations
      */
@@ -134,6 +141,7 @@ public class TelegramLoginConfigurer<B extends HttpSecurityBuilder<B>>
 
     /**
      * Sets the {@link AuthenticationFailureHandler} to be used.
+     *
      * @param failureHandler the failure handler
      * @return the {@link TelegramLoginConfigurer} for further customizations
      */
@@ -144,6 +152,7 @@ public class TelegramLoginConfigurer<B extends HttpSecurityBuilder<B>>
 
     /**
      * Sets the {@link AuthenticationDetailsSource} to be used.
+     *
      * @param authenticationDetailsSource the authentication details source
      * @return the {@link TelegramLoginConfigurer} for further customizations
      */
@@ -156,6 +165,7 @@ public class TelegramLoginConfigurer<B extends HttpSecurityBuilder<B>>
 
     /**
      * Sets the URL that the {@link AuthenticationFilter} will use for login requests.
+     *
      * @param loginProcessingUrl the login processing URL
      * @return the {@link TelegramLoginConfigurer} for further customizations
      */
@@ -165,6 +175,7 @@ public class TelegramLoginConfigurer<B extends HttpSecurityBuilder<B>>
 
     /**
      * Sets the {@link PathPatternRequestMatcher} to be used for matching login requests.
+     *
      * @param requestMatcher the request matcher
      * @return the {@link TelegramLoginConfigurer} for further customizations
      */
@@ -175,6 +186,7 @@ public class TelegramLoginConfigurer<B extends HttpSecurityBuilder<B>>
 
     /**
      * Sets the {@link SecurityContextRepository} to be used.
+     *
      * @param securityContextRepository the security context repository
      * @return the {@link TelegramLoginConfigurer} for further customizations
      */
@@ -185,6 +197,7 @@ public class TelegramLoginConfigurer<B extends HttpSecurityBuilder<B>>
 
     /**
      * Sets the {@link AuthenticationManager} to be used.
+     *
      * @param authenticationManager the authentication manager
      * @return the {@link TelegramLoginConfigurer} for further customizations
      */
@@ -195,11 +208,23 @@ public class TelegramLoginConfigurer<B extends HttpSecurityBuilder<B>>
 
     /**
      * Sets the {@link AuthenticationConverter} to be used.
+     *
      * @param authenticationConverter the authentication converter
      * @return the {@link TelegramLoginConfigurer} for further customizations
      */
     public TelegramLoginConfigurer<B> authenticationConverter(AuthenticationConverter authenticationConverter) {
         this.authenticationConverter = authenticationConverter;
+        return this;
+    }
+
+    /**
+     * Sets the {@link TelegramUserService} to use for loading user details.
+     *
+     * @param userService the user service to use
+     * @return the {@link TelegramLoginConfigurer} for further customizations
+     */
+    public TelegramLoginConfigurer<B> userService(TelegramUserService userService) {
+        this.userService = userService;
         return this;
     }
 
@@ -249,7 +274,11 @@ public class TelegramLoginConfigurer<B extends HttpSecurityBuilder<B>>
         if (validators == null) {
             validators = defaultAuthValidators();
         }
-        return new TelegramAuthenticationProvider(new CompositeTelegramAuthenticationValidator(validators));
+        var provider = new TelegramAuthenticationProvider(new CompositeTelegramAuthenticationValidator(validators));
+        if (userService != null) {
+            provider.setUserService(userService);
+        }
+        return provider;
     }
 
     private SecurityContextRepository getSecurityContextRepository() {
