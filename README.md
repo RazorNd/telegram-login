@@ -1,8 +1,8 @@
 # Telegram Login for Spring Security
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Version](https://img.shields.io/badge/Version-0.2.0-yellow.svg)](https://github.com/RazorNd/telegram-login)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.0.1-brightgreen.svg)](https://spring.io/projects/spring-boot)
+[![Version](https://img.shields.io/badge/Version-0.3.0-yellow.svg)](https://github.com/RazorNd/telegram-login)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.0.2-brightgreen.svg)](https://spring.io/projects/spring-boot)
 [![Java](https://img.shields.io/badge/Java-17%2B-orange.svg)](https://www.oracle.com/java/technologies/javase-jdk17-downloads.html)
 
 This project provides seamless integration of the [Telegram Login Widget](https://core.telegram.org/widgets/login) with
@@ -24,7 +24,7 @@ Servlet and WebFlux applications.
 ## Prerequisites
 
 - Java 17 or higher
-- Spring Boot 4.0.1 or higher
+- Spring Boot 4.0.2 or higher
 
 ## Installation
 
@@ -32,7 +32,7 @@ Servlet and WebFlux applications.
 
 ```kotlin
 dependencies {
-    implementation("io.github.razornd.telegramlogin:spring-boot-starter-telegram-login:0.2.0")
+    implementation("io.github.razornd.telegramlogin:spring-boot-starter-telegram-login:0.3.0")
 }
 ```
 
@@ -43,7 +43,7 @@ dependencies {
 <dependency>
     <groupId>io.github.razornd.telegramlogin</groupId>
     <artifactId>spring-boot-starter-telegram-login</artifactId>
-    <version>0.2.0</version>
+    <version>0.3.0</version>
 </dependency>
 ```
 
