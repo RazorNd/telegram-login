@@ -34,7 +34,7 @@ import org.jreleaser.model.Active
 
 plugins {
     id("org.springframework.boot") apply false
-    id("org.jreleaser") version "1.23.0"
+    id("org.jreleaser") version "1.24.0"
     java
 }
 
